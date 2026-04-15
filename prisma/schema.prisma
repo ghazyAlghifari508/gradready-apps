@@ -1,0 +1,351 @@
+// GradReady — Prisma Schema
+// Based on ERD Section 10 of PRD v3.0.0
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../src/generated/prisma/client"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// Enums
+// ============================================
+
+// Role is now a plain String field (better-auth admin plugin sends lowercase "user"/"admin")
+
+enum SkillStatus {
+  RED
+  YELLOW
+  GREEN
+}
+
+enum DemandLevel {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum PriorityLevel {
+  HIGH
+  MED
+  LOW
+}
+
+enum DocType {
+  MOTIVATION
+  COVER
+  LINKEDIN
+  PORTFOLIO
+  SELF_INTRO
+  CV
+}
+
+enum JobStatus {
+  SAVED
+  APPLIED
+  INTERVIEW
+  OFFERED
+  ACCEPTED
+  REJECTED
+}
+
+enum BadgeType {
+  READY_75
+  READY_90
+  FULLY_READY
+}
+
+enum QuizLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+// ============================================
+// Models
+// ============================================
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  role          String   @default("user")
+  banned        Boolean  @default(false)
+  banReason     String?
+  banExpires    DateTime?
+
+  // Better Auth fields
+  sessions      Session[]
+  accounts      Account[]
+
+  // Relations
+  profile          UserProfile?
+  cvRecords        CvRecord[]
+  cvScoreHistory   CvScoreHistory[]
+  skillGaps        SkillGap[]
+  skillProgress    UserSkillProgress[]
+  roadmapProgress  RoadmapProgress[]
+  generatedDocs    GeneratedDoc[]
+  savedJobs        SavedJob[]
+  readinessBadges  ReadinessBadge[]
+
+  @@map("users")
+}
+
+// Better Auth required models
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verifications")
+}
+
+model UserProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetJobId    String?
+  targetJob      JobRole? @relation(fields: [targetJobId], references: [id])
+  university     String?
+  graduationYear Int?
+  bio            String?
+  linkedinUrl    String?
+  githubUrl      String?
+  phone          String?
+
+  @@map("user_profiles")
+}
+
+model JobRole {
+  id           String      @id @default(cuid())
+  name         String      @unique
+  category     String
+  description  String?
+  avgSalaryMin Int?
+  avgSalaryMax Int?
+  demandLevel  DemandLevel @default(MEDIUM)
+  createdAt    DateTime    @default(now())
+
+  // Relations
+  skills          JobRoleSkill[]
+  profiles        UserProfile[]
+  skillGaps       SkillGap[]
+  readinessBadges ReadinessBadge[]
+
+  @@map("job_roles")
+}
+
+model Skill {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  category    String
+  description String?
+
+  // Relations
+  jobRoleSkills     JobRoleSkill[]
+  learningResources LearningResource[]
+  userProgress      UserSkillProgress[]
+  quizQuestions     QuizQuestion[]
+
+  @@map("skills")
+}
+
+model JobRoleSkill {
+  id            String        @id @default(cuid())
+  jobRoleId     String
+  jobRole       JobRole       @relation(fields: [jobRoleId], references: [id], onDelete: Cascade)
+  skillId       String
+  skill         Skill         @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  priorityLevel PriorityLevel @default(MED)
+
+  @@unique([jobRoleId, skillId])
+  @@map("job_role_skills")
+}
+
+model CvRecord {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileUrl       String?
+  versionNumber Int      @default(1)
+  score         Int?
+  parsedSkills  Json?    // JSON array of skill names
+  feedbackJson  Json?    // JSON object with feedback per section
+  isLatest      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  // Relations
+  scoreHistory CvScoreHistory[]
+  skillGaps    SkillGap[]
+
+  @@map("cv_records")
+}
+
+model CvScoreHistory {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cvRecordId String
+  cvRecord   CvRecord @relation(fields: [cvRecordId], references: [id], onDelete: Cascade)
+  score      Int
+  recordedAt DateTime @default(now())
+
+  @@map("cv_score_history")
+}
+
+model SkillGap {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cvRecordId    String
+  cvRecord      CvRecord @relation(fields: [cvRecordId], references: [id], onDelete: Cascade)
+  jobRoleId     String
+  jobRole       JobRole  @relation(fields: [jobRoleId], references: [id], onDelete: Cascade)
+  gapDetailJson Json?    // JSON with per-skill gap details
+  readinessPct  Float    @default(0)
+  createdAt     DateTime @default(now())
+
+  @@map("skill_gaps")
+}
+
+model UserSkillProgress {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skillId    String
+  skill      Skill       @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  status     SkillStatus @default(RED)
+  quizScore  Int?
+  quizLevel  QuizLevel?
+  updatedAt  DateTime    @updatedAt
+
+  @@unique([userId, skillId])
+  @@map("user_skill_progress")
+}
+
+model LearningResource {
+  id            String   @id @default(cuid())
+  skillId       String
+  skill         Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  title         String
+  url           String
+  platform      String   // YouTube, Dicoding, Coursera, freeCodeCamp, etc.
+  durationWeeks Float?
+  isFree        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  // Relations
+  roadmapProgress RoadmapProgress[]
+
+  @@map("learning_resources")
+}
+
+model RoadmapProgress {
+  id          String            @id @default(cuid())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resourceId  String
+  resource    LearningResource  @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  isCompleted Boolean           @default(false)
+  completedAt DateTime?
+
+  @@unique([userId, resourceId])
+  @@map("roadmap_progress")
+}
+
+model GeneratedDoc {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  docType     DocType
+  contentText String
+  inputJson   Json?    // JSON with the input data used to generate
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("generated_docs")
+}
+
+model SavedJob {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName String
+  position    String
+  jobDescText String?
+  fitScore    Int?      // nullable — only if via Job Fit Estimator
+  status      JobStatus @default(SAVED)
+  notes       String?
+  savedAt     DateTime  @default(now())
+
+  @@map("saved_jobs")
+}
+
+model ReadinessBadge {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobRoleId String
+  jobRole   JobRole   @relation(fields: [jobRoleId], references: [id], onDelete: Cascade)
+  badgeType BadgeType
+  earnedAt  DateTime  @default(now())
+
+  @@map("readiness_badges")
+}
+
+model QuizQuestion {
+  id            String @id @default(cuid())
+  skillId       String
+  skill         Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  questionText  String
+  optionsJson   Json   // JSON array of options
+  correctAnswer String
+  explanation   String?
+
+  @@map("quiz_questions")
+}
