@@ -193,7 +193,7 @@ export default function CVAnalyzerPage() {
             <span>{error}</span>
             {error.includes("Canva") && (
               <p style={{ fontSize: "0.85rem", fontWeight: 400, opacity: 0.9, marginTop: "4px" }}>
-                <strong>Tips Canva:</strong> Saat download, pilih <strong>PDF Standard</strong> dan pastikan opsi <strong>"Flatten PDF"</strong> <u>TIDAK</u> dicentang agar teks tetap terbaca oleh AI.
+                <strong>Tips Canva:</strong> Saat download, pilih <strong>PDF Standard</strong> dan pastikan opsi <strong>&quot;Flatten PDF&quot;</strong> <u>TIDAK</u> dicentang agar teks tetap terbaca oleh AI.
               </p>
             )}
           </div>

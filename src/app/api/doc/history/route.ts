@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { DocType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -21,14 +22,15 @@ export async function GET(req: Request) {
     const docs = await prisma.generatedDoc.findMany({
       where: { 
         userId: session.user.id,
-        ...(docType ? { docType: docType as any } : {}),
+        ...(docType ? { docType: docType as DocType } : {}),
       },
       orderBy: { createdAt: "desc" },
     });
 
     return NextResponse.json({ docs });
-  } catch (error: any) {
-    console.error("Doc History API Error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Doc History API Error:", message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

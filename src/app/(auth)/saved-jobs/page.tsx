@@ -66,7 +66,7 @@ export default function SavedJobsPage() {
         setPosition("");
         fetchJobs();
       }
-    } catch (e) {
+    } catch {
       alert("Error adding job");
     }
   };
@@ -79,7 +79,7 @@ export default function SavedJobsPage() {
         body: JSON.stringify({ id, status: newStatus }),
       });
       fetchJobs();
-    } catch (e) {
+    } catch {
       alert("Error updating status");
     }
   };
@@ -91,7 +91,7 @@ export default function SavedJobsPage() {
         method: "DELETE",
       });
       fetchJobs();
-    } catch (e) {
+    } catch {
       alert("Error deleting job");
     }
   };

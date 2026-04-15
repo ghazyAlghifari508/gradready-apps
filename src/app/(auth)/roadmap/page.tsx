@@ -42,7 +42,7 @@ export default function RoadmapPage() {
       if (data.roadmap) {
         setRoadmap(data.roadmap);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setError("Gagal memuat timeline roadmap.");
     } finally {
@@ -107,7 +107,7 @@ export default function RoadmapPage() {
 
   const redSkills = roadmap.filter(s => s.status === "RED");
   const yellowSkills = roadmap.filter(s => s.status === "YELLOW");
-  const greenSkills = roadmap.filter(s => s.status === "GREEN");
+  const _greenSkills = roadmap.filter(s => s.status === "GREEN");
 
   const renderSkillGroup = (title: string, skills: RoadmapSkill[], badgeClass: string) => {
     if (skills.length === 0) return null;

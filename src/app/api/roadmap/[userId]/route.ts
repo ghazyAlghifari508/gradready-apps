@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 
 export async function GET(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
@@ -69,15 +69,16 @@ export async function GET(
 
     // Sort: RED first, YELLOW second, GREEN last
     roadmap.sort((a, b) => {
-      const order = { "RED": 1, "YELLOW": 2, "GREEN": 3 };
+      const order: Record<string, number> = { "RED": 1, "YELLOW": 2, "GREEN": 3 };
       return order[a.status] - order[b.status];
     });
 
     return NextResponse.json({ success: true, roadmap });
-  } catch (error: any) {
-    console.error("Roadmap Fetch Error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Roadmap Fetch Error:", message);
     return NextResponse.json(
-      { error: "Internal Server Error", details: error.message },
+      { error: "Internal Server Error", details: message },
       { status: 500 }
     );
   }

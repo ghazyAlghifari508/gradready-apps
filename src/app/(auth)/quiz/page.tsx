@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
-import Link from "next/link";
+
 import { useRouter } from "next/navigation";
 import { BookOpen } from "lucide-react";
 
@@ -31,7 +31,7 @@ export default function QuizListPage() {
         if (res.ok) {
           setSkills(data.skills);
         }
-      } catch (err) {
+      } catch {
         console.error("Failed to load skills for quiz");
       } finally {
         setLoading(false);

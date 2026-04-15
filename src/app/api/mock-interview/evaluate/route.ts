@@ -40,8 +40,9 @@ Return valid JSON exclusively with this shape:
     const evaluation = parseAIJSON(rawResponse);
 
     return NextResponse.json({ success: true, evaluation });
-  } catch (error: any) {
-    console.error("Mock Interview Evaluation API Error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Mock Interview Evaluation API Error:", message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

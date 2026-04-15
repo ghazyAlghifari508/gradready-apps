@@ -40,10 +40,11 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, progress });
-  } catch (error: any) {
-    console.error("Roadmap Progress Update Error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Roadmap Progress Update Error:", message);
     return NextResponse.json(
-      { error: "Internal Server Error", details: error.message },
+      { error: "Internal Server Error", details: message },
       { status: 500 }
     );
   }

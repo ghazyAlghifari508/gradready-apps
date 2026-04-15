@@ -5,7 +5,6 @@ import React, {
   useContext,
   useState,
   useCallback,
-  useEffect,
 } from "react";
 
 import { Check, X, AlertTriangle, Info } from "lucide-react";

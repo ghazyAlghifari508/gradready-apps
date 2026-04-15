@@ -2,8 +2,6 @@
 
 import React, { useMemo } from "react";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -19,8 +17,8 @@ import { id as idLocale } from "date-fns/locale";
 
 interface HistoryData {
   chartData: { date: string; score: number; timestamp: number }[];
-  docs: any[];
-  cvRecords: any[];
+  docs: { id: string; docType: string; createdAt: string }[];
+  cvRecords: { id: string; versionNumber: number; isLatest: boolean; score: number | null; createdAt: string }[];
 }
 
 export default function HistoryClientPage({ chartData, docs, cvRecords }: HistoryData) {

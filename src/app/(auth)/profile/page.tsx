@@ -59,7 +59,13 @@ export default async function ProfilePage() {
               user={{
                 name: user?.name || "",
                 email: user?.email || "",
-                ...user?.profile
+                university: user?.profile?.university ?? undefined,
+                graduationYear: user?.profile?.graduationYear ?? undefined,
+                bio: user?.profile?.bio ?? undefined,
+                linkedinUrl: user?.profile?.linkedinUrl ?? undefined,
+                githubUrl: user?.profile?.githubUrl ?? undefined,
+                phone: user?.profile?.phone ?? undefined,
+                targetJobId: user?.profile?.targetJobId ?? undefined,
               }} 
               jobRoles={jobRoles} 
             />

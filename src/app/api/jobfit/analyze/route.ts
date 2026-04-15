@@ -54,8 +54,9 @@ Respond ONLY in valid JSON.`;
     const result = parseAIJSON(rawAIResponse);
 
     return NextResponse.json({ success: true, result });
-  } catch (error: any) {
-    console.error("Job Fit Analyze API Error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Job Fit Analyze API Error:", message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

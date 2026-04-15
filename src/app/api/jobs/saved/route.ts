@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: Request) {
+export async function GET(_req: Request) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -22,8 +22,9 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json({ success: true, savedJobs });
-  } catch (error: any) {
-    console.error("GET Saved Jobs API Error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("GET Saved Jobs API Error:", message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -70,8 +71,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, savedJob: newJob });
 
-  } catch (error: any) {
-    console.error("POST Saved Jobs API Error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("POST Saved Jobs API Error:", message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -96,8 +98,9 @@ export async function DELETE(req: Request) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
-    console.error("DELETE Saved Jobs API Error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("DELETE Saved Jobs API Error:", message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

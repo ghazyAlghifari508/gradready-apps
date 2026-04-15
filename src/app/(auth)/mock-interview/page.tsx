@@ -43,8 +43,8 @@ export default function MockInterviewPage() {
       if (!res.ok) throw new Error(data.error);
 
       setEvaluation(data.evaluation);
-    } catch (err: any) {
-      alert("Gagal mengevaluasi: " + err.message);
+    } catch (err: unknown) {
+      alert("Gagal mengevaluasi: " + (err instanceof Error ? err.message : "Unknown error"));
     } finally {
       setLoading(false);
     }
@@ -90,7 +90,7 @@ export default function MockInterviewPage() {
         <div className="lg:col-span-2 flex flex-col gap-6">
           <Card className="p-6 border-[#E5E5E5] flex flex-col gap-4">
             <h3 className="text-[#4B4B4B] text-[18px] font-bold border-l-4 border-[#FF9600] pl-3">
-              "{selectedQuestion}"
+              {"\""}{selectedQuestion}{"\""}
             </h3>
             
             <textarea
@@ -142,7 +142,7 @@ export default function MockInterviewPage() {
                   <div>
                     <h4 className="text-[#AFAFAF] text-[12px] font-bold uppercase tracking-[1px] mb-2">Contoh Jawaban Ideal (Berdasarkan ceritamu)</h4>
                     <p className="text-[#4B4B4B] text-[15px] font-medium bg-[#F5F5F5] p-4 rounded-2xl italic border-l-4 border-[#58CC02]">
-                      "{evaluation.improvedAnswer}"
+                      {"\""}{evaluation.improvedAnswer}{"\""}
                     </p>
                   </div>
                 </div>

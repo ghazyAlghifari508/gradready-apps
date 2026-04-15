@@ -50,7 +50,7 @@ export function scoreCv(params: {
   skills: string[];
   languageQuality: "good" | "fair" | "poor";
 }): CVScoreBreakdown {
-  const { text, sections, skills, languageQuality } = params;
+  const { text, sections, skills: _skills, languageQuality } = params;
   const lowerText = text.toLowerCase();
 
   // ── 1. Format & Struktur (20 pts) ──────────────────────────────────────────

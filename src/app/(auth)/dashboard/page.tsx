@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Card from "@/components/ui/Card";
-import Badge from "@/components/ui/Badge";
+
 import ProgressBar from "@/components/ui/ProgressBar";
 import { checkAndAwardBadges } from "@/lib/badges";
 import { FileText, BarChart2, Map, Bot, TrendingUp, Target } from "lucide-react";
@@ -252,7 +252,7 @@ export default async function DashboardPage() {
             </h3>
             {latestDocs.length > 0 ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {latestDocs.map((doc: any) => (
+                {latestDocs.map((doc: { id: string; docType: string; createdAt: Date }) => (
                   <div key={doc.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: "8px 12px", border: "1px solid var(--gray-border)", borderRadius: 8 }}>
                      <span style={{ fontSize: 13, fontWeight: 700, color: "var(--gray-text)" }}>{doc.docType}</span>
                      <span style={{ fontSize: 12, color: "var(--gray-light)" }}>{new Date(doc.createdAt).toLocaleDateString("id-ID")}</span>

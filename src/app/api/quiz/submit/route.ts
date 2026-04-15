@@ -6,6 +6,11 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+interface QuizAnswer {
+  questionId: string;
+  selectedIndex: number;
+}
+
 export async function POST(req: Request) {
   try {
     const session = await auth.api.getSession({
@@ -24,7 +29,7 @@ export async function POST(req: Request) {
     }
 
     // Fetch correct answers
-    const questionIds = answers.map((a: any) => a.questionId);
+    const questionIds = answers.map((a: QuizAnswer) => a.questionId);
     const dbQuestions = await prisma.quizQuestion.findMany({
       where: { id: { in: questionIds } },
     });
@@ -77,8 +82,9 @@ export async function POST(req: Request) {
       updatedProgress 
     });
 
-  } catch (error: any) {
-    console.error("Quiz Submit API Error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Quiz Submit API Error:", message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

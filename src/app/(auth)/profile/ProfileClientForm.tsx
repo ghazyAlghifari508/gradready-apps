@@ -6,8 +6,18 @@ import { useToast } from "@/components/ui/Toast";
 import { AlertTriangle } from "lucide-react";
 
 interface ProfileClientFormProps {
-  user: any;
-  jobRoles: any[];
+  user: {
+    name?: string;
+    email?: string;
+    university?: string;
+    graduationYear?: number;
+    bio?: string;
+    linkedinUrl?: string;
+    githubUrl?: string;
+    phone?: string;
+    targetJobId?: string;
+  };
+  jobRoles: { id: string; name: string }[];
 }
 
 export default function ProfileClientForm({ user, jobRoles }: ProfileClientFormProps) {

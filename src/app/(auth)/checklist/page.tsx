@@ -36,6 +36,7 @@ export default function ChecklistPage() {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line
     setIsClient(true);
     // Load state from custom storage to bypass database freeze for this table
     const savedChecks = localStorage.getItem("gradready_checklist_checked");
@@ -158,7 +159,7 @@ export default function ChecklistPage() {
         <form onSubmit={handleAddCustom} className="flex flex-col sm:flex-row gap-3">
           <select 
             value={newItemCategory} 
-            onChange={(e) => setNewItemCategory(e.target.value as any)}
+            onChange={(e) => setNewItemCategory(e.target.value as ChecksetItem["category"])}
             className="h-12 px-4 rounded-[12px] bg-[#F5F5F5] border-2 border-[#E5E5E5] text-[#4B4B4B] font-bold text-[14px] focus:outline-none focus:border-[#1CB0F6]"
           >
             {categories.map(c => <option key={c} value={c}>{c}</option>)}

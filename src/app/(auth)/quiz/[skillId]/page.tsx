@@ -20,10 +20,10 @@ export default function QuizTakePage() {
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [skill, setSkill] = useState<any>(null);
+  const [skill, setSkill] = useState<{ name: string } | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, number>>({});
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<{ passed: boolean; scorePercentage: number; feedback: { questionId: string; isCorrect: boolean; correctOptionIndex: number; explanation: string }[] } | null>(null);
 
   useEffect(() => {
     async function loadQuiz() {
@@ -36,7 +36,7 @@ export default function QuizTakePage() {
         } else {
           alert("Gagal memuat kuis.");
         }
-      } catch (e) {
+      } catch {
         alert("Error loading quiz.");
       } finally {
         setLoading(false);
@@ -73,8 +73,8 @@ export default function QuizTakePage() {
       if (!res.ok) throw new Error(data.error);
       
       setResult(data);
-    } catch (e: any) {
-      alert(e.message);
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : "Unknown error");
     } finally {
         setSubmitting(false);
     }
@@ -117,7 +117,7 @@ export default function QuizTakePage() {
          <div className="flex flex-col gap-6">
            <h3 className="text-[#4B4B4B] font-bold text-[20px] mb-2 border-b-2 border-[#E5E5E5] pb-2">Review Jawabanmu</h3>
            {questions.map((q, idx) => {
-             const fb = feedback.find((f: any) => f.questionId === q.id);
+             const fb = feedback.find((f: { questionId: string; isCorrect: boolean; correctOptionIndex: number; explanation: string }) => f.questionId === q.id);
              return (
                <Card key={q.id} className="p-6 border-l-8" style={{ borderLeftColor: fb?.isCorrect ? "#58CC02" : "#FF4B4B" }}>
                  <p className="text-[#4B4B4B] font-bold text-[16px] mb-4">{idx + 1}. {q.questionText}</p>

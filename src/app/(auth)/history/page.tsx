@@ -38,8 +38,8 @@ export default async function HistoryPage() {
   return (
     <HistoryClientPage 
       chartData={formattedChartData} 
-      docs={generatedDocs} 
-      cvRecords={cvRecords} 
+      docs={generatedDocs.map(d => ({ ...d, createdAt: d.createdAt.toISOString() }))} 
+      cvRecords={cvRecords.map(r => ({ ...r, createdAt: r.createdAt.toISOString() }))} 
     />
   );
 }

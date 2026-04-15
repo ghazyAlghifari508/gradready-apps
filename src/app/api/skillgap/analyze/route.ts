@@ -84,7 +84,7 @@ export async function POST(req: Request) {
       }
       
       let status: "GREEN" | "YELLOW" | "RED" = "RED";
-      let weight = priority === "HIGH" ? 3 : priority === "MED" ? 2 : 1;
+      const weight = priority === "HIGH" ? 3 : priority === "MED" ? 2 : 1;
       maxScore += weight * 100;
 
       if (bestMatchScore >= 0.8) {
@@ -130,10 +130,11 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, skillGap });
 
-  } catch (error: any) {
-    console.error("Skill Gap Analysis Error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Skill Gap Analysis Error:", message);
     return NextResponse.json(
-      { error: "Internal Server Error", details: error.message },
+      { error: "Internal Server Error", details: message },
       { status: 500 }
     );
   }

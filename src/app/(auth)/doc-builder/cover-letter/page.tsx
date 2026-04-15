@@ -35,7 +35,7 @@ export default function CoverLetterPage() {
       } else {
         alert("Gagal memproses AI: " + data.error);
       }
-    } catch (err) {
+    } catch {
       alert("Error generate doc");
     } finally {
       setLoading(false);

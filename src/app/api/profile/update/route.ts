@@ -65,8 +65,9 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, profile });
-  } catch (error: any) {
-    console.error("Profile Update Error", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Profile Update Error", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

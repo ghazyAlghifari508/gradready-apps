@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./skill-gap.module.css";
-import { useRouter } from "next/navigation";
+
 import { Search, ArrowRight } from "lucide-react";
 
 interface GapDetail {
@@ -25,7 +25,7 @@ export default function SkillGapPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
+
 
   useEffect(() => {
     fetchGap();
@@ -33,7 +33,7 @@ export default function SkillGapPage() {
 
   const fetchGap = async () => {
     try {
-      const res = await fetch("/api/roadmap/progress"); // wait, roadmap progress only returns roadmap progress. We should just call GET /api/roadmap/:userId? Or we can fetch the skillgap object!
+      const _res = await fetch("/api/roadmap/progress"); // wait, roadmap progress only returns roadmap progress. We should just call GET /api/roadmap/:userId? Or we can fetch the skillgap object!
       // Actually, we don't have an endpoint strictly for GET /api/skillgap. 
       // Let's call POST /api/skillgap/analyze which will regenerate or just use an inline server action in a real app.
       // Better yet, I'll update the server to return the existing one if doing a GET... Wait, I didn't write a GET for api/skillgap.

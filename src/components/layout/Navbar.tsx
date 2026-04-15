@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { User, BarChart2, LogOut } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { StreakCounter } from "@/components/ui";

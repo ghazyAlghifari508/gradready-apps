@@ -13,7 +13,7 @@ export default function DocBuilderHubPage() {
       .then((data) => {
         if (data.docs) {
           const newCounts: Record<string, number> = {};
-          data.docs.forEach((doc: any) => {
+          data.docs.forEach((doc: { docType: string }) => {
             newCounts[doc.docType] = (newCounts[doc.docType] || 0) + 1;
           });
           setCounts(newCounts);

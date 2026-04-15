@@ -143,7 +143,7 @@ export default function MarketDashboard() {
                         tick={{ fill: "#AFAFAF", fontSize: 12, fontWeight: 700 }}
                       />
                       <Tooltip
-                        formatter={(value: any) => [typeof value === 'number' ? formatRupiah(value) : String(value), ""]}
+                        formatter={(value: unknown) => [typeof value === 'number' ? formatRupiah(value) : String(value), ""]}
                         cursor={{ fill: "rgba(0,0,0,0.02)" }}
                         contentStyle={{ borderRadius: '12px', border: '2px solid #E5E5E5', boxShadow: '0 8px 16px rgba(0,0,0,0.05)' }}
                       />

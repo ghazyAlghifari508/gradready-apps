@@ -6,6 +6,13 @@ import { callAI, parseAIJSON } from "@/lib/ai";
 
 export const dynamic = "force-dynamic";
 
+interface QuizQuestionData {
+  questionText: string;
+  options: string[];
+  correctOptionIndex: number;
+  explanation?: string;
+}
+
 export async function GET(req: Request) {
   try {
     const session = await auth.api.getSession({
@@ -61,7 +68,7 @@ Return exclusively a VALID JSON object of this shape:
       const rawPrompt = `Generate the quiz questions for ${skillInfo.name} now.`;
       
       const aiRaw = await callAI(rawPrompt, { systemPrompt, format: "json", temperature: 0.4 });
-      const generated = parseAIJSON<{ questions: any[] }>(aiRaw);
+      const generated = parseAIJSON<{ questions: QuizQuestionData[] }>(aiRaw);
 
       if (generated && generated.questions && generated.questions.length > 0) {
         // Save to DB
@@ -96,8 +103,9 @@ Return exclusively a VALID JSON object of this shape:
       questions: clientQuestions 
     });
 
-  } catch (error: any) {
-    console.error("Quiz API Error:", error);
-    return NextResponse.json({ error: "Internal Server Error", message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Quiz API Error:", message);
+    return NextResponse.json({ error: "Internal Server Error", message }, { status: 500 });
   }
 }

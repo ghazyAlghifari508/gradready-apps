@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+/* eslint-disable @next/next/no-img-element */
 import Button from "@/components/ui/Button";
 import { FileText, Target, Rocket, FileEdit, BarChart, Star, Lock, Bot, Camera, MessageCircle, Briefcase } from 'lucide-react';
 
@@ -329,7 +330,7 @@ export default function LandingPage() {
                   <Bot size={32} className="text-white" />
                 </div>
                 <div className="bg-gray-100 rounded-2xl p-5 flex-1 rounded-tl-none border-2 border-gray-200">
-                  <p className="text-gray-600 font-bold text-lg leading-snug">"Coba ceritakan tentang pengalaman proyek terbesarmu saat di bangku kuliah!"</p>
+                  <p className="text-gray-600 font-bold text-lg leading-snug">&quot;Coba ceritakan tentang pengalaman proyek terbesarmu saat di bangku kuliah!&quot;</p>
                 </div>
             </div>
 
@@ -338,7 +339,7 @@ export default function LandingPage() {
                   <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" alt="User" />
                 </div>
                 <div className="bg-white rounded-2xl p-5 flex-1 rounded-tr-none border-b-[6px] border-gray-200">
-                  <p className="text-gray-700 font-bold text-lg leading-snug">"Tentu. Saat semester 5, saya memimpin tim beranggotakan 4 orang untuk..."</p>
+                  <p className="text-gray-700 font-bold text-lg leading-snug">&quot;Tentu. Saat semester 5, saya memimpin tim beranggotakan 4 orang untuk...&quot;</p>
                   <div className="mt-3 flex items-center gap-2">
                      <span className="inline-block w-4 h-4 rounded-full bg-green-400 animate-pulse"></span>
                      <span className="text-sm font-bold text-gray-400">Menganalisis nada suara...</span>
@@ -444,7 +445,7 @@ export default function LandingPage() {
              {/* Speech bubble tail */}
              <div className="absolute -top-4 left-10 w-8 h-8 bg-white border-l-2 border-t-2 border-gray-200 rotate-45"></div>
              <p className="font-bold text-gray-600 text-lg mb-8 leading-relaxed">
-               "GradReady bener-bener ngebantu aku ngerapihin CV dari nol! Fitur AI-nya tau persis keywords apa yang dicari HRD. Alhasil dapet panggilan interview lebih banyak dari biasanya!"
+               &quot;GradReady bener-bener ngebantu aku ngerapihin CV dari nol! Fitur AI-nya tau persis keywords apa yang dicari HRD. Alhasil dapet panggilan interview lebih banyak dari biasanya!&quot;
              </p>
              <div className="flex items-center gap-4">
                <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=100&h=100&fit=crop" alt="Budi" className="w-14 h-14 rounded-full border-2 border-gray-200 object-cover" />
@@ -458,7 +459,7 @@ export default function LandingPage() {
            <div className="bg-white border-2 border-gray-200 border-b-[8px] rounded-[32px] p-8 relative hover:-translate-y-2 transition-transform">
              <div className="absolute -top-4 left-10 w-8 h-8 bg-white border-l-2 border-t-2 border-gray-200 rotate-45"></div>
              <p className="font-bold text-gray-600 text-lg mb-8 leading-relaxed">
-               "Deteksi skill gap-nya juara banget! Aku jadi tau harus belajar React JS lebih dalam untuk memperkuat portfolio. Latihannya seru berasa main game, dan sekarang aku udah kerja!"
+               &quot;Deteksi skill gap-nya juara banget! Aku jadi tau harus belajar React JS lebih dalam untuk memperkuat portfolio. Latihannya seru berasa main game, dan sekarang aku udah kerja!&quot;
              </p>
              <div className="flex items-center gap-4">
                <img src="https://images.unsplash.com/photo-1503454537195-1dc5348a6c6c?w=100&h=100&fit=crop" alt="Siti" className="w-14 h-14 rounded-full border-2 border-gray-200 object-cover" />

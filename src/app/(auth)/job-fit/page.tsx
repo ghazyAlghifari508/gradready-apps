@@ -35,8 +35,8 @@ export default function JobFitPage() {
         throw new Error(data.error || "Failed to analyze");
       }
       setResult(data.result);
-    } catch (err: any) {
-      alert("Error: " + err.message);
+    } catch (err: unknown) {
+      alert("Error: " + (err instanceof Error ? err.message : "Unknown error"));
     } finally {
       setLoading(false);
     }

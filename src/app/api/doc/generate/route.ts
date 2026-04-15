@@ -103,8 +103,9 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, doc });
-  } catch (error: any) {
-    console.error("Doc Generate API Error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Doc Generate API Error:", message);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
