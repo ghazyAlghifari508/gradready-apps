@@ -9,13 +9,6 @@ const nextConfig: NextConfig = {
       canvas: { browser: "./src/lib/empty.ts" },
     },
   },
-  // @ts-ignore - NextConfig types might be strict for eslint
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  }
 };
 
 export default nextConfig;
