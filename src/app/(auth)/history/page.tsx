@@ -35,11 +35,14 @@ export default async function HistoryPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  type GenDocType = typeof generatedDocs[0];
+  type CvRecType = typeof cvRecords[0];
+
   return (
     <HistoryClientPage 
       chartData={formattedChartData} 
-      docs={generatedDocs.map(d => ({ ...d, createdAt: d.createdAt.toISOString() }))} 
-      cvRecords={cvRecords.map(r => ({ ...r, createdAt: r.createdAt.toISOString() }))} 
+      docs={generatedDocs.map((d: GenDocType) => ({ ...d, createdAt: d.createdAt.toISOString() }))} 
+      cvRecords={cvRecords.map((r: CvRecType) => ({ ...r, createdAt: r.createdAt.toISOString() }))} 
     />
   );
 }
