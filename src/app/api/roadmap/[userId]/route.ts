@@ -43,12 +43,12 @@ export async function GET(
     
     // Create a set/map for completed resource IDs to quickly check
     const completedResourceIds = new Set(
-      roadmapProgress.filter(rp => rp.isCompleted).map(rp => rp.resourceId)
+      roadmapProgress.filter((rp: typeof roadmapProgress[0]) => rp.isCompleted).map((rp: typeof roadmapProgress[0]) => rp.resourceId)
     );
 
     // Format response
-    const roadmap = skillProgress.map(progress => {
-      const resources = progress.skill.learningResources.map(resource => ({
+    const roadmap = skillProgress.map((progress: typeof skillProgress[0]) => {
+      const resources = progress.skill.learningResources.map((resource: typeof progress.skill.learningResources[0]) => ({
         id: resource.id,
         title: resource.title,
         url: resource.url,

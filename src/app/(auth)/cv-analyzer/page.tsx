@@ -245,7 +245,7 @@ export default function CVAnalyzerPage() {
                 </h2>
                 <div className={styles.skillBadges}>
                   {result.parsedSkills.length > 0
-                    ? result.parsedSkills.map(s => <span key={s} className={styles.skillBadge}>{s}</span>)
+                    ? result.parsedSkills.map((s: string) => <span key={s} className={styles.skillBadge}>{s}</span>)
                     : <p className={styles.noSkills}>Tidak ada skill teknis terdeteksi. Pastikan CV memiliki section Skills yang jelas.</p>
                   }
                 </div>

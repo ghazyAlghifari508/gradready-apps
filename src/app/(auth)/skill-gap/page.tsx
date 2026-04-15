@@ -108,7 +108,7 @@ export default function SkillGapPage() {
           <span className={styles.badgeCount}>{skills.length} Skills</span>
         </div>
         <div className={styles.skillGrid}>
-          {skills.map(skill => (
+          {skills.map((skill: GapDetail) => (
             <div key={skill.skillId} className={styles.skillCard}>
               <span className={styles.skillName}>{skill.skillName}</span>
               <div className={`${styles.statusIndicator} ${styles[`status${skill.status}`]}`} title={skill.status} />

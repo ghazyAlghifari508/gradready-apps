@@ -148,7 +148,7 @@ export default function ProfileClientForm({ user, jobRoles }: ProfileClientFormP
            style={{ padding: "12px 16px", borderRadius: 12, border: "2px solid rgba(255,160,0,0.5)", backgroundColor: "rgba(255,160,0,0.05)", outline: "none" }}
         >
           <option value="" disabled>Pilih target karir...</option>
-          {jobRoles.map(r => (
+          {jobRoles.map((r: { id: string, name: string }) => (
             <option key={r.id} value={r.id}>{r.name}</option>
           ))}
         </select>

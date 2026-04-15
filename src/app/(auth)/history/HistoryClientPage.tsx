@@ -34,7 +34,7 @@ export default function HistoryClientPage({ chartData, docs, cvRecords }: Histor
         map.set(d.date, { date: d.date, score: d.score, count: 1 });
       }
     });
-    return Array.from(map.values()).map(d => ({
+    return Array.from(map.values()).map((d: { date: string, score: number, count: number }) => ({
       date: d.date,
       score: Math.round(d.score / d.count)
     }));
@@ -143,7 +143,7 @@ export default function HistoryClientPage({ chartData, docs, cvRecords }: Histor
                   </tr>
                 </thead>
                 <tbody>
-                  {docs.map(doc => (
+                  {docs.map((doc: any) => (
                     <tr key={doc.id} className="hover:bg-gray-50 transition-colors border-b border-[var(--gray-border)]">
                       <td className="py-4 pr-3 font-bold text-[var(--gray-text)] capitalize">
                         {doc.docType.toLowerCase().replace("_", " ")}

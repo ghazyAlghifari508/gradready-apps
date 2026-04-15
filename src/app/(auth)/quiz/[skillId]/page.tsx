@@ -59,7 +59,7 @@ export default function QuizTakePage() {
     setSubmitting(true);
     setResult(null);
     try {
-      const payload = questions.map(q => ({
+      const payload = questions.map((q: typeof questions[0]) => ({
         questionId: q.id,
         selectedIndex: answers[q.id]
       }));

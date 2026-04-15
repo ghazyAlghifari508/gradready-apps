@@ -166,7 +166,7 @@ export default function RecheckPage() {
             <div className={styles.skillsOld}>
               <p className={styles.skillTitle}>Skill ({previousCV.parsedSkills?.length ?? 0})</p>
               <div className={styles.skillBadges}>
-                {(previousCV.parsedSkills ?? []).slice(0, 10).map(s => (
+                {(previousCV.parsedSkills ?? []).slice(0, 10).map((s: string) => (
                   <span key={s} className={styles.skillBadgeOld}>{s}</span>
                 ))}
                 {(previousCV.parsedSkills?.length ?? 0) > 10 && (
@@ -214,7 +214,7 @@ export default function RecheckPage() {
                 <div className={styles.skillsNew}>
                   <p className={styles.skillTitle}>Skill ({newResult.parsedSkills.length})</p>
                   <div className={styles.skillBadges}>
-                    {newResult.parsedSkills.slice(0, 10).map(s => {
+                    {newResult.parsedSkills.slice(0, 10).map((s: string) => {
                       const isNew = !(previousCV.parsedSkills ?? []).includes(s);
                       return (
                         <span key={s} className={isNew ? styles.skillBadgeNew : styles.skillBadge}>

@@ -56,9 +56,9 @@ export default function RoadmapPage() {
 
   const toggleResource = async (resourceId: string, currentCompleted: boolean) => {
     // Optimistic UI Update
-    const updatedRoadmap = roadmap.map(skill => ({
+    const updatedRoadmap = roadmap.map((skill: typeof roadmap[0]) => ({
       ...skill,
-      resources: skill.resources.map(res => 
+      resources: skill.resources.map((res: typeof skill.resources[0]) => 
         res.id === resourceId ? { ...res, isCompleted: !currentCompleted } : res
       )
     }));

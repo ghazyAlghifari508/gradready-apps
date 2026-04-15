@@ -168,7 +168,7 @@ export default function SavedJobsPage() {
                    onChange={(e) => handleUpdateStatus(job.id, e.target.value)}
                    className="w-full bg-[#F5F5F5] border-2 border-[#E5E5E5] rounded-[10px] px-3 py-2 text-[#4B4B4B] font-bold outline-none focus:border-[#1CB0F6]"
                  >
-                   {Object.keys(STATUS_COLORS).map(s => <option key={s} value={s}>{s}</option>)}
+                   {Object.keys(STATUS_COLORS).map((s: string) => <option key={s} value={s}>{s}</option>)}
                  </select>
               </div>
             </Card>

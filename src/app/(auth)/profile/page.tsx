@@ -80,7 +80,7 @@ export default async function ProfilePage() {
                </h3>
                {badges.length > 0 ? (
                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                   {badges.map(badge => {
+                   {badges.map((badge: typeof badges[0]) => {
                      // Determine golden/green styles based on badgeType
                      const isFullyReady = badge.badgeType === "FULLY_READY";
                      const bg = isFullyReady ? "linear-gradient(135deg, #fceabb 0%, #f8b500 100%)" : "rgba(88,204,2,0.15)";
