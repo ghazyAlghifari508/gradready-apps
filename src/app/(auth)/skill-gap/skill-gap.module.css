@@ -1,0 +1,282 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.header {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border-neutral, #e5e5e5);
+}
+
+.title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 2rem;
+  color: var(--dark-blue);
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  color: var(--gray-text);
+  font-size: 0.95rem;
+  max-width: 500px;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background: var(--bg-surface, #f9fafb);
+  border-radius: 12px;
+  border: 1px dashed var(--border-neutral, #e5e5e5);
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
+
+.emptyTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.emptyDesc {
+  color: var(--text-secondary);
+  max-width: 500px;
+  margin-bottom: 2rem;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--text-primary, #111);
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btnPrimary:hover {
+  background-color: #333;
+  transform: translateY(-1px);
+}
+
+/* Dashboard Grid */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+
+.overviewPanel {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border-neutral, #e5e5e5);
+  padding: 2rem;
+  height: fit-content;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.readinessSection {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.readinessLabel {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.readinessScore {
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.progressBar {
+  width: 100%;
+  height: 12px;
+  background: var(--bg-surface, #f3f4f6);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.timelineItem {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-neutral, #e5e5e5);
+}
+
+.timelineItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.timelineLabel {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.timelineValue {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Detail Panel */
+.detailPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.prioritySection {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border-neutral, #e5e5e5);
+  padding: 1.5rem;
+}
+
+.priorityHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-neutral, #e5e5e5);
+}
+
+.priorityTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.badgeCount {
+  font-size: 0.875rem;
+  background: var(--bg-surface, #f3f4f6);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.skillGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.skillCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-neutral, #e5e5e5);
+  background: var(--bg-surface, #f9fafb);
+}
+
+.skillName {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.statusIndicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.statusGREEN {
+  background-color: var(--green, #10b981);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.statusYELLOW {
+  background-color: var(--golden, #fbbf24);
+  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1);
+}
+
+.statusRED {
+  background-color: var(--red, #ef4444);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+.roadmapBanner {
+  margin-top: 3rem;
+  background: linear-gradient(135deg, #111 0%, #333 100%);
+  border-radius: 12px;
+  padding: 2.5rem;
+  text-align: center;
+  color: white;
+}
+
+.bannerTitle {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+
+.bannerDesc {
+  color: #a1a1aa;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.btnLight {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem 2rem;
+  background-color: white;
+  color: #111;
+  border-radius: 6px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.btnLight:hover {
+  transform: translateY(-2px);
+}
