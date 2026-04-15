@@ -17,7 +17,7 @@ export default async function HistoryPage() {
     orderBy: { recordedAt: "asc" },
   });
 
-  const formattedChartData = cvHistory.map(entry => ({
+  const formattedChartData = cvHistory.map((entry: { recordedAt: Date; score: number }) => ({
     date: new Date(entry.recordedAt).toLocaleDateString("id-ID"),
     score: entry.score,
     timestamp: entry.recordedAt.getTime(),
