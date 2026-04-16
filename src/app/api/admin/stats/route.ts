@@ -23,7 +23,7 @@ export async function GET() {
   const avgScore =
     cvScores.length > 0
       ? Math.round(
-          cvScores.reduce((sum, r) => sum + (r.score ?? 0), 0) / cvScores.length
+          cvScores.reduce((sum: number, r: { score: number | null }) => sum + (r.score ?? 0), 0) / cvScores.length
         )
       : 0;
 
