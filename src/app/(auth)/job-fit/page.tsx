@@ -4,6 +4,10 @@ import React, { useState } from "react";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import { Search, Zap, Check, X } from "lucide-react";
+import {
+  getApiErrorMessage,
+  useQuotaExceededHandler,
+} from "@/lib/auth-client";
 
 type JobFitResult = {
   fitScore: number;
@@ -16,6 +20,7 @@ export default function JobFitPage() {
   const [jobDescription, setJobDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<JobFitResult | null>(null);
+  const handleQuotaExceeded = useQuotaExceededHandler();
 
   const handleAnalyze = async () => {
     if (jobDescription.length < 50) {
@@ -32,7 +37,8 @@ export default function JobFitPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Failed to analyze");
+        if (handleQuotaExceeded(data)) return;
+        throw new Error(getApiErrorMessage(data, "Failed to analyze"));
       }
       setResult(data.result);
     } catch (err: unknown) {

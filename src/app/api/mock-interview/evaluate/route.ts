@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { callAI, parseAIJSON } from "@/lib/ai";
+import { assertAiQuota, consumeCredit } from "@/lib/billing";
+import { handleApiError } from "@/lib/errors";
 
 export async function POST(req: Request) {
   try {
@@ -12,6 +14,11 @@ export async function POST(req: Request) {
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const activeSubscription = await assertAiQuota(
+      session.user.id,
+      "MOCK_INTERVIEW",
+    );
 
     const { question, answer } = await req.json();
 
@@ -39,10 +46,10 @@ Return valid JSON exclusively with this shape:
 
     const evaluation = parseAIJSON(rawResponse);
 
+    await consumeCredit(session.user.id, "MOCK_INTERVIEW", activeSubscription);
+
     return NextResponse.json({ success: true, evaluation });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("Mock Interview Evaluation API Error:", message);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return handleApiError(error);
   }
 }

@@ -4,11 +4,16 @@ import { useState } from "react";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import {
+  getApiErrorMessage,
+  useQuotaExceededHandler,
+} from "@/lib/auth-client";
 
 export default function PortfolioPage() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ projectName: "", techStack: "", goal: "", impact: "" });
   const [generatedText, setGeneratedText] = useState("");
+  const handleQuotaExceeded = useQuotaExceededHandler();
 
   const handleGenerate = async () => {
     if (!formData.projectName || !formData.goal) return;
@@ -25,8 +30,10 @@ export default function PortfolioPage() {
       const data = await res.json();
       if (data.success) {
         setGeneratedText(data.doc.contentText);
+      } else if (handleQuotaExceeded(data)) {
+        return;
       } else {
-        alert("Gagal memproses AI: " + data.error);
+        alert("Gagal memproses AI: " + getApiErrorMessage(data, "Gagal memproses AI"));
       }
     } catch {
       alert("Error generate doc");

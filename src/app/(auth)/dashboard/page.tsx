@@ -4,10 +4,19 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Card from "@/components/ui/Card";
+import CreditUsageCard from "@/components/billing/CreditUsageCard";
 
 import ProgressBar from "@/components/ui/ProgressBar";
 import { checkAndAwardBadges } from "@/lib/badges";
-import { FileText, BarChart2, Map, Bot, TrendingUp, Target } from "lucide-react";
+import { getRemainingCredits } from "@/lib/billing";
+import {
+  FileText,
+  BarChart2,
+  Map,
+  Bot,
+  TrendingUp,
+  Target,
+} from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -16,45 +25,42 @@ export default async function DashboardPage() {
   const userId = session.user.id;
   const userName = session.user.name?.split(" ")[0] ?? "Pengguna";
 
-  // Check and award badges passively
   await checkAndAwardBadges(userId);
 
-  // Fetch CV Record
   const latestCv = await prisma.cvRecord.findFirst({
     where: { userId, isLatest: true },
     orderBy: { createdAt: "desc" },
   });
 
-  // Fetch Skill Gap (for readiness %)
   const skillGap = await prisma.skillGap.findFirst({
     where: { userId },
     orderBy: { createdAt: "desc" },
     include: { jobRole: true },
   });
 
-  // Fetch Roadmap Progress
   const roadmapProgressCount = await prisma.roadmapProgress.count({
     where: { userId, isCompleted: true },
   });
-  
-  // Total roadmap items could be derived from JobRole skills -> LearningResources
-  // For simplicity, we just count all resources tied to the User's Target Job Role skills
-  const totalRoadmapItems = skillGap ? await prisma.learningResource.count({
-    where: {
-      skill: {
-        jobRoleSkills: {
-          some: { jobRoleId: skillGap.jobRoleId }
-        }
-      }
-    }
-  }) : 0;
 
-  // Fetch Docs
+  const totalRoadmapItems = skillGap
+    ? await prisma.learningResource.count({
+        where: {
+          skill: {
+            jobRoleSkills: {
+              some: { jobRoleId: skillGap.jobRoleId },
+            },
+          },
+        },
+      })
+    : 0;
+
   const latestDocs = await prisma.generatedDoc.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
     take: 3,
   });
+
+  const creditUsage = await getRemainingCredits(userId);
 
   const features = [
     {
@@ -121,7 +127,7 @@ export default async function DashboardPage() {
           alignItems: "center",
           justifyContent: "space-between",
           gap: 16,
-          flexWrap: "wrap"
+          flexWrap: "wrap",
         }}
       >
         <div>
@@ -143,8 +149,8 @@ export default async function DashboardPage() {
               lineHeight: 1.5,
             }}
           >
-            {skillGap?.jobRole 
-              ? `Target Karir: ${skillGap.jobRole.name}` 
+            {skillGap?.jobRole
+              ? `Target Karir: ${skillGap.jobRole.name}`
               : "Selamat datang di GradReady. Mulai perjalanan karirmu hari ini."}
           </p>
         </div>
@@ -222,52 +228,143 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 32, marginBottom: 32, flexDirection: "row", flexWrap: "wrap" }}>
-        
+      <div
+        style={{
+          display: "flex",
+          gap: 32,
+          marginBottom: 32,
+          flexDirection: "row",
+          flexWrap: "wrap",
+        }}
+      >
         {/* Roadmap Progress */}
         <div style={{ flex: 1, minWidth: 300 }}>
           <Card>
-            <h3 style={{ fontSize: 16, fontWeight: 800, color: "var(--dark-blue)", marginBottom: 12 }}>
+            <h3
+              style={{
+                fontSize: 16,
+                fontWeight: 800,
+                color: "var(--dark-blue)",
+                marginBottom: 12,
+              }}
+            >
               Progress Roadmap Belajar
             </h3>
             {totalRoadmapItems > 0 ? (
               <>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                  <span style={{ fontSize: 13, color: "var(--gray-text)" }}>Modul selesai</span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: "var(--green)" }}>{roadmapProgressCount} / {totalRoadmapItems}</span>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: 6,
+                  }}
+                >
+                  <span style={{ fontSize: 13, color: "var(--gray-text)" }}>
+                    Modul selesai
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 700,
+                      color: "var(--green)",
+                    }}
+                  >
+                    {roadmapProgressCount} / {totalRoadmapItems}
+                  </span>
                 </div>
-                <ProgressBar value={(roadmapProgressCount / totalRoadmapItems) * 100} variant="default" />
+                <ProgressBar
+                  value={(roadmapProgressCount / totalRoadmapItems) * 100}
+                  variant="default"
+                />
               </>
             ) : (
-             <div style={{ fontSize: 13, color: "var(--gray-light)" }}>Belum ada roadmap yang dibuat. Cek Skill Gap kamu terlebih dahulu.</div>
+              <div style={{ fontSize: 13, color: "var(--gray-light)" }}>
+                Belum ada roadmap yang dibuat. Cek Skill Gap kamu terlebih
+                dahulu.
+              </div>
             )}
           </Card>
         </div>
 
+        {/* AI Credits */}
+        <div style={{ flex: 1, minWidth: 300 }}>
+          <CreditUsageCard
+            plan={creditUsage.plan}
+            used={creditUsage.used}
+            limit={creditUsage.limit}
+            periodEnd={creditUsage.periodEnd}
+          />
+        </div>
+
         {/* Latest Documents Generate */}
         <div style={{ flex: 1, minWidth: 300 }}>
-           <Card>
-            <h3 style={{ fontSize: 16, fontWeight: 800, color: "var(--dark-blue)", marginBottom: 12 }}>
+          <Card>
+            <h3
+              style={{
+                fontSize: 16,
+                fontWeight: 800,
+                color: "var(--dark-blue)",
+                marginBottom: 12,
+              }}
+            >
               Dokumen Terakhir
             </h3>
             {latestDocs.length > 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {latestDocs.map((doc: { id: string; docType: string; createdAt: Date }) => (
-                  <div key={doc.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: "8px 12px", border: "1px solid var(--gray-border)", borderRadius: 8 }}>
-                     <span style={{ fontSize: 13, fontWeight: 700, color: "var(--gray-text)" }}>{doc.docType}</span>
-                     <span style={{ fontSize: 12, color: "var(--gray-light)" }}>{new Date(doc.createdAt).toLocaleDateString("id-ID")}</span>
-                  </div>
-                ))}
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: 10 }}
+              >
+                {latestDocs.map(
+                  (doc: { id: string; docType: string; createdAt: Date }) => (
+                    <div
+                      key={doc.id}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "8px 12px",
+                        border: "1px solid var(--gray-border)",
+                        borderRadius: 8,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 700,
+                          color: "var(--gray-text)",
+                        }}
+                      >
+                        {doc.docType}
+                      </span>
+                      <span
+                        style={{ fontSize: 12, color: "var(--gray-light)" }}
+                      >
+                        {new Date(doc.createdAt).toLocaleDateString("id-ID")}
+                      </span>
+                    </div>
+                  ),
+                )}
               </div>
             ) : (
-              <div style={{ fontSize: 13, color: "var(--gray-light)" }}>Belum ada dokumen yang digenerate AI. Pilih menu AI Doc Builder untuk mulai.</div>
+              <div style={{ fontSize: 13, color: "var(--gray-light)" }}>
+                Belum ada dokumen yang digenerate AI. Pilih menu AI Doc Builder
+                untuk mulai.
+              </div>
             )}
           </Card>
         </div>
       </div>
 
       {/* ── Feature Grid ── */}
-      <h2 style={{ fontSize: 20, fontWeight: 800, color: "var(--dark-blue)", marginBottom: 16 }}>Menu Pilihan</h2>
+      <h2
+        style={{
+          fontSize: 20,
+          fontWeight: 800,
+          color: "var(--dark-blue)",
+          marginBottom: 16,
+        }}
+      >
+        Menu Pilihan
+      </h2>
       <div
         style={{
           display: "grid",
@@ -276,13 +373,11 @@ export default async function DashboardPage() {
         }}
       >
         {features.map((f) => (
-          <a
-            key={f.href}
-            href={f.href}
-            style={{ textDecoration: "none" }}
-          >
+          <a key={f.href} href={f.href} style={{ textDecoration: "none" }}>
             <Card>
-              <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+              <div
+                style={{ display: "flex", gap: 14, alignItems: "flex-start" }}
+              >
                 <span style={{ flexShrink: 0 }}>{f.icon}</span>
                 <div style={{ flex: 1 }}>
                   <div

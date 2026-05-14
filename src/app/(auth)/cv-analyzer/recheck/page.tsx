@@ -4,6 +4,10 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, AlertTriangle, FileText, Upload, Sparkles, ArrowRight } from "lucide-react";
 import styles from "./recheck.module.css";
+import {
+  getApiErrorMessage,
+  useQuotaExceededHandler,
+} from "@/lib/auth-client";
 
 interface ScoreBreakdown {
   format: number;
@@ -92,6 +96,7 @@ export default function RecheckPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const handleQuotaExceeded = useQuotaExceededHandler();
 
   useEffect(() => {
     fetch("/api/cv/latest")
@@ -109,14 +114,21 @@ export default function RecheckPage() {
       formData.append("file", file);
       const res = await fetch("/api/cv/upload", { method: "POST", body: formData });
       const data = await res.json();
-      if (!res.ok) { setError(data.error ?? "Terjadi kesalahan"); return; }
+      if (!res.ok) {
+        if (handleQuotaExceeded(data)) {
+          setError("Kredit AI kamu habis untuk periode ini.");
+          return;
+        }
+        setError(getApiErrorMessage(data, "Terjadi kesalahan"));
+        return;
+      }
       setNewResult(data);
     } catch {
       setError("Gagal menghubungi server.");
     } finally {
       setIsUploading(false);
     }
-  }, []);
+  }, [handleQuotaExceeded]);
 
   const delta = newResult && previousCV ? newResult.score.total - previousCV.score : null;
 

@@ -6,6 +6,10 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import dynamic from "next/dynamic";
 import { StandardPDF } from "@/components/StandardPDF";
+import {
+  getApiErrorMessage,
+  useQuotaExceededHandler,
+} from "@/lib/auth-client";
 
 const PDFDownloadLink = dynamic(
   () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
@@ -16,6 +20,7 @@ export default function CoverLetterPage() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ companyName: "", position: "", jobDescription: "" });
   const [generatedText, setGeneratedText] = useState("");
+  const handleQuotaExceeded = useQuotaExceededHandler();
 
   const handleGenerate = async () => {
     if (!formData.companyName || !formData.position || !formData.jobDescription) return;
@@ -32,8 +37,10 @@ export default function CoverLetterPage() {
       const data = await res.json();
       if (data.success) {
         setGeneratedText(data.doc.contentText);
+      } else if (handleQuotaExceeded(data)) {
+        return;
       } else {
-        alert("Gagal memproses AI: " + data.error);
+        alert("Gagal memproses AI: " + getApiErrorMessage(data, "Gagal memproses AI"));
       }
     } catch {
       alert("Error generate doc");

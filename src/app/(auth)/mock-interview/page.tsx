@@ -3,6 +3,10 @@
 import React, { useState } from "react";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
+import {
+  getApiErrorMessage,
+  useQuotaExceededHandler,
+} from "@/lib/auth-client";
 
 const QUESTIONS = [
   "Ceritakan tentang dirimu dan mengapa kamu tertarik dengan karir ini?",
@@ -23,6 +27,7 @@ export default function MockInterviewPage() {
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
+  const handleQuotaExceeded = useQuotaExceededHandler();
 
   const handleEvaluate = async () => {
     if (answer.trim().length < 20) {
@@ -40,7 +45,10 @@ export default function MockInterviewPage() {
         body: JSON.stringify({ question: selectedQuestion, answer: answer.trim() }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) {
+        if (handleQuotaExceeded(data)) return;
+        throw new Error(getApiErrorMessage(data, "Gagal mengevaluasi"));
+      }
 
       setEvaluation(data.evaluation);
     } catch (err: unknown) {

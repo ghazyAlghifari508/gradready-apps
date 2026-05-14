@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, BarChart2, LogOut } from "lucide-react";
+import { User, BarChart2, LogOut, Wallet } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { StreakCounter } from "@/components/ui";
 
@@ -207,6 +207,30 @@ export default function Navbar() {
             >
               <BarChart2 size={16} />
               <span>Riwayat & Progress</span>
+            </Link>
+            <Link
+              href="/billing"
+              onClick={() => setMenuOpen(false)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                padding: "12px 16px",
+                fontSize: 13,
+                fontWeight: 700,
+                color: "var(--gray-text)",
+                textDecoration: "none",
+                transition: "background 0.15s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "rgba(0,0,0,0.03)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "none")
+              }
+            >
+              <Wallet size={16} />
+              <span>Billing & Credits</span>
             </Link>
             <div
               style={{ height: 1, backgroundColor: "var(--border-color)" }}

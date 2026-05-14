@@ -2,17 +2,18 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { assertAiQuota, consumeCredit } from "@/lib/billing";
+import { handleApiError } from "@/lib/errors";
 
 function stringSimilarity(s1: string, s2: string): number {
   const v1 = s1.toLowerCase();
   const v2 = s2.toLowerCase();
   if (v1 === v2) return 1;
   if (v1.includes(v2) || v2.includes(v1)) return 0.8;
-  
-  // simple intersection for partial matches (e.g. "React.js" vs "React")
+
   const tokens1 = v1.split(/[\s,.-]+/);
   const tokens2 = v2.split(/[\s,.-]+/);
-  const intersection = tokens1.filter(t => tokens2.includes(t));
+  const intersection = tokens1.filter((t) => tokens2.includes(t));
   if (intersection.length > 0) {
     return intersection.length / Math.max(tokens1.length, tokens2.length);
   }
@@ -30,23 +31,25 @@ export async function POST(req: Request) {
     }
 
     const userId = session.user.id;
+    const activeSubscription = await assertAiQuota(userId, "SKILLGAP");
     const { cvRecordId } = await req.json().catch(() => ({}));
 
     const userProfile = await prisma.userProfile.findUnique({
       where: { userId },
-      include: { targetJob: { include: { skills: { include: { skill: true } } } } },
+      include: {
+        targetJob: { include: { skills: { include: { skill: true } } } },
+      },
     });
 
     if (!userProfile?.targetJob) {
       return NextResponse.json(
         { error: "Target job role not set in profile" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const targetJob = userProfile.targetJob;
 
-    // Get CV Record
     let cvRecord;
     if (cvRecordId) {
       cvRecord = await prisma.cvRecord.findUnique({
@@ -55,34 +58,39 @@ export async function POST(req: Request) {
     } else {
       cvRecord = await prisma.cvRecord.findFirst({
         where: { userId, isLatest: true },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: "desc" },
       });
     }
 
     if (!cvRecord || !cvRecord.parsedSkills) {
       return NextResponse.json(
         { error: "Valid CV record with parsed skills not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     const parsedSkills = cvRecord.parsedSkills as string[];
-    
-    const gapDetails: Array<{ skillId: string, skillName: string, status: "GREEN" | "YELLOW" | "RED", priority: string }> = [];
-    
+
+    const gapDetails: Array<{
+      skillId: string;
+      skillName: string;
+      status: "GREEN" | "YELLOW" | "RED";
+      priority: string;
+    }> = [];
+
     let totalScore = 0;
     let maxScore = 0;
 
     for (const jrSkill of targetJob.skills) {
       const requiredName = jrSkill.skill.name;
       const priority = jrSkill.priorityLevel;
-      
+
       let bestMatchScore = 0;
       for (const parsed of parsedSkills) {
         const score = stringSimilarity(requiredName, parsed);
         if (score > bestMatchScore) bestMatchScore = score;
       }
-      
+
       let status: "GREEN" | "YELLOW" | "RED" = "RED";
       const weight = priority === "HIGH" ? 3 : priority === "MED" ? 2 : 1;
       maxScore += weight * 100;
@@ -94,15 +102,14 @@ export async function POST(req: Request) {
         status = "YELLOW";
         totalScore += weight * 50;
       }
-      
+
       gapDetails.push({
         skillId: jrSkill.skill.id,
         skillName: requiredName,
         status,
-        priority
+        priority,
       });
-      
-      // Upsert UserSkillProgress
+
       await prisma.userSkillProgress.upsert({
         where: { userId_skillId: { userId, skillId: jrSkill.skill.id } },
         create: {
@@ -112,7 +119,7 @@ export async function POST(req: Request) {
         },
         update: {
           status, // update flag to reflect actual state today
-        }
+        },
       });
     }
 
@@ -125,17 +132,13 @@ export async function POST(req: Request) {
         jobRoleId: targetJob.id,
         gapDetailJson: gapDetails,
         readinessPct,
-      }
+      },
     });
 
-    return NextResponse.json({ success: true, skillGap });
+    await consumeCredit(userId, "SKILLGAP", activeSubscription);
 
+    return NextResponse.json({ success: true, skillGap });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("Skill Gap Analysis Error:", message);
-    return NextResponse.json(
-      { error: "Internal Server Error", details: message },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }

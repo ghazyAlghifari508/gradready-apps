@@ -232,6 +232,11 @@ const RESOURCES: Record<
 async function main() {
   console.log("🌱 Seeding GradReady database...");
 
+  await prisma.user.updateMany({
+    where: { plan: { not: "FREE" } },
+    data: { plan: "FREE" },
+  });
+
   // 0. Seed Admin User
   console.log("  → Seeding admin user...");
   const existingAdmin = await prisma.user.findUnique({

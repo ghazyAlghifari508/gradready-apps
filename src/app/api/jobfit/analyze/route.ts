@@ -2,9 +2,21 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { callAI, parseAIJSON } from "@/lib/ai";
+import { callAI, parseAndValidateAIJSON } from "@/lib/ai";
+import { assertAiQuota, consumeCredit } from "@/lib/billing";
+import { handleApiError } from "@/lib/errors";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
+
+const jobFitSchema = z
+  .object({
+    fitScore: z.number().min(0).max(100),
+    matchingSkills: z.array(z.string()),
+    missingSkills: z.array(z.string()),
+    recommendations: z.string().min(1),
+  })
+  .strict();
 
 export async function POST(req: Request) {
   try {
@@ -16,19 +28,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const activeSubscription = await assertAiQuota(session.user.id, "JOBFIT");
+
     const { jobDescription } = await req.json();
 
     if (!jobDescription || jobDescription.length < 50) {
-      return NextResponse.json({ error: "Please provide a valid job description (min 50 chars)." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Please provide a valid job description (min 50 chars)." },
+        { status: 400 },
+      );
     }
 
-    // Fetch latest CV parsed skills
     const latestCv = await prisma.cvRecord.findFirst({
       where: { userId: session.user.id, isLatest: true },
     });
 
-    const userSkills = latestCv?.parsedSkills 
-      ? (latestCv.parsedSkills as string[]).join(", ") 
+    const userSkills = latestCv?.parsedSkills
+      ? (latestCv.parsedSkills as string[]).join(", ")
       : "No specific skills recorded.";
 
     const systemPrompt = `You are an expert ATS and recruitment AI.
@@ -51,12 +67,12 @@ Respond ONLY in valid JSON.`;
       maxTokens: 1000,
     });
 
-    const result = parseAIJSON(rawAIResponse);
+    const result = parseAndValidateAIJSON(rawAIResponse, jobFitSchema);
+
+    await consumeCredit(session.user.id, "JOBFIT", activeSubscription);
 
     return NextResponse.json({ success: true, result });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("Job Fit Analyze API Error:", message);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return handleApiError(error);
   }
 }

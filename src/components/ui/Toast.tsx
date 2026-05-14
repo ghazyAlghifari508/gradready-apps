@@ -15,10 +15,18 @@ interface Toast {
   id: string;
   message: string;
   type: ToastType;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
 }
 
 interface ToastContextValue {
-  showToast: (message: string, type?: ToastType) => void;
+  showToast: (
+    message: string,
+    type?: ToastType,
+    action?: Toast["action"],
+  ) => void;
 }
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -26,13 +34,16 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string, type: ToastType = "info") => {
-    const id = Math.random().toString(36).slice(2);
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3500);
-  }, []);
+  const showToast = useCallback(
+    (message: string, type: ToastType = "info", action?: Toast["action"]) => {
+      const id = Math.random().toString(36).slice(2);
+      setToasts((prev) => [...prev, { id, message, type, action }]);
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, 5000);
+    },
+    [],
+  );
 
   const removeToast = (id: string) =>
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -122,6 +133,28 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               {typeIcons[toast.type]}
             </span>
             <span style={{ flex: 1 }}>{toast.message}</span>
+            {toast.action && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toast.action?.onClick();
+                  removeToast(toast.id);
+                }}
+                style={{
+                  border: "1px solid rgba(255,255,255,0.55)",
+                  borderRadius: 8,
+                  background: "rgba(255,255,255,0.18)",
+                  color: "#FFFFFF",
+                  fontSize: 12,
+                  fontWeight: 900,
+                  padding: "6px 8px",
+                  cursor: "pointer",
+                }}
+              >
+                {toast.action.label}
+              </button>
+            )}
           </div>
         ))}
       </div>
