@@ -8,6 +8,7 @@ import {
   getApiErrorMessage,
   useQuotaExceededHandler,
 } from "@/lib/auth-client";
+import { useToast } from "@/components/ui/Toast";
 
 type JobFitResult = {
   fitScore: number;
@@ -17,6 +18,7 @@ type JobFitResult = {
 };
 
 export default function JobFitPage() {
+  const { showToast } = useToast();
   const [jobDescription, setJobDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<JobFitResult | null>(null);
@@ -24,7 +26,7 @@ export default function JobFitPage() {
 
   const handleAnalyze = async () => {
     if (jobDescription.length < 50) {
-      alert("Job Description terlalu pendek. Mohon masukkan lebih banyak detail.");
+      showToast("Job Description terlalu pendek. Mohon masukkan lebih banyak detail.", "warning");
       return;
     }
     setLoading(true);
@@ -42,7 +44,7 @@ export default function JobFitPage() {
       }
       setResult(data.result);
     } catch (err: unknown) {
-      alert("Error: " + (err instanceof Error ? err.message : "Unknown error"));
+      showToast("Error: " + (err instanceof Error ? err.message : "Unknown error"), "error");
     } finally {
       setLoading(false);
     }

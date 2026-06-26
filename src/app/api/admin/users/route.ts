@@ -1,19 +1,28 @@
-import { auth } from "@/lib/auth";
+import { auth, isAdmin, isRole } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { apiError } from "@/lib/errors";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
-// GET: List all users
+const getSchema = z.object({ search: z.string().max(100).optional() });
+const patchSchema = z.object({
+  userId: z.string().cuid(),
+  role: z.string(),
+});
+
 export async function GET(req: Request) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || session.user.role !== "admin") {
+  if (!isAdmin(session)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
   const { searchParams } = new URL(req.url);
-  const search = searchParams.get("search") ?? "";
+  const parsed = getSchema.safeParse({ search: searchParams.get("search") ?? undefined });
+  if (!parsed.success) return apiError(400, "INVALID_PAYLOAD", parsed.error.issues);
+  const search = parsed.data.search ?? "";
 
   const users = await prisma.user.findMany({
     where: search
@@ -39,17 +48,16 @@ export async function GET(req: Request) {
   return NextResponse.json({ users });
 }
 
-// PATCH: Update user role
 export async function PATCH(req: Request) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || session.user.role !== "admin") {
+  if (!isAdmin(session)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
-  const { userId, role } = await req.json();
-  if (!userId || !["user", "admin"].includes(role)) {
-    return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
-  }
+  const body = patchSchema.safeParse(await req.json().catch(() => null));
+  if (!body.success) return apiError(400, "INVALID_PAYLOAD", body.error.issues);
+  const { userId, role } = body.data;
+  if (!isRole(role)) return apiError(400, "INVALID_PAYLOAD", "Invalid role value");
 
   const updated = await prisma.user.update({
     where: { id: userId },

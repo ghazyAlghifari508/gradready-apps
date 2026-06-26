@@ -30,14 +30,12 @@ export async function POST(req: Request) {
 
     const activeSubscription = await assertAiQuota(session.user.id, "JOBFIT");
 
-    const { jobDescription } = await req.json();
-
-    if (!jobDescription || jobDescription.length < 50) {
-      return NextResponse.json(
-        { error: "Please provide a valid job description (min 50 chars)." },
-        { status: 400 },
-      );
-    }
+    const bodySchema = z.object({
+      jobDescription: z.string().min(50).max(3000),
+    });
+    const body = bodySchema.safeParse(await req.json().catch(() => null));
+    if (!body.success) return NextResponse.json({ error: "Please provide a valid job description (50–3000 chars)." }, { status: 400 });
+    const { jobDescription } = body.data;
 
     const latestCv = await prisma.cvRecord.findFirst({
       where: { userId: session.user.id, isLatest: true },

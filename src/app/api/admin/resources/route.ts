@@ -1,14 +1,23 @@
-import { auth } from "@/lib/auth";
+import { auth, isAdmin } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
-// GET: List all learning resources
+const resourceSchema = z.object({
+  skillId: z.string().min(1),
+  title: z.string().min(1).max(200),
+  url: z.string().url().max(500),
+  platform: z.string().min(1).max(100),
+  durationWeeks: z.coerce.number().int().positive().optional(),
+  isFree: z.boolean().optional().default(true),
+});
+
 export async function GET(req: Request) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || session.user.role !== "admin") {
+  if (!isAdmin(session)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
@@ -25,21 +34,17 @@ export async function GET(req: Request) {
   return NextResponse.json({ resources });
 }
 
-// POST: Create a new resource
 export async function POST(req: Request) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || session.user.role !== "admin") {
+  if (!isAdmin(session)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
-  const { skillId, title, url, platform, durationWeeks, isFree } =
-    await req.json();
-  if (!skillId || !title || !url || !platform) {
-    return NextResponse.json(
-      { error: "skillId, title, url, and platform are required" },
-      { status: 400 }
-    );
+  const parsed = resourceSchema.safeParse(await req.json().catch(() => null));
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid payload", issues: parsed.error.issues }, { status: 400 });
   }
+  const { skillId, title, url, platform, durationWeeks, isFree } = parsed.data;
 
   const resource = await prisma.learningResource.create({
     data: {

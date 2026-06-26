@@ -18,14 +18,14 @@ export default async function AuthLayout({
     <ToastProvider>
       <div style={{ minHeight: "100vh", backgroundColor: "var(--bg-gray)" }}>
         <Navbar />
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", minWidth: 0 }}>
           <Sidebar />
           <main
             style={{
               flex: 1,
+              minWidth: 0,
               padding: 0,
               minHeight: "calc(100vh - 64px)",
-              maxWidth: "calc(100vw - 240px)",
               overflowX: "hidden",
             }}
           >

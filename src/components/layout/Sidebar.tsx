@@ -26,6 +26,7 @@ import {
   X,
   CreditCard,
   Wallet,
+  BookOpen,
 } from "lucide-react";
 
 interface NavItem {
@@ -60,6 +61,7 @@ const navItems: NavItem[] = [
     group: "tools",
   },
   { href: "/saved-jobs", label: "Saved Jobs", icon: Briefcase, group: "tools" },
+  { href: "/blog", label: "Blog & Artikel", icon: BookOpen, group: "tools" },
   {
     href: "/admin",
     label: "Admin Dashboard",

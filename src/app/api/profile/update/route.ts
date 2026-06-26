@@ -2,72 +2,86 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { apiError, handleApiError } from "@/lib/errors";
+import { profileUpdateSchema } from "@/lib/validation/schemas";
 
 export async function POST(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const body = await req.json();
-    const { 
-      name, 
-      university, 
-      graduationYear, 
-      bio, 
-      linkedinUrl, 
-      githubUrl, 
+    const validation = profileUpdateSchema.safeParse(
+      await req.json().catch(() => undefined),
+    );
+    if (!validation.success) {
+      return apiError(400, "INVALID_PAYLOAD", validation.error.issues);
+    }
+
+    const {
+      name,
+      university,
+      graduationYear,
+      bio,
+      linkedinUrl,
+      githubUrl,
       phone,
-      targetJobId
-    } = body;
+      targetJobId,
+    } = validation.data;
 
-    // Update User Name
+    if (targetJobId) {
+      const targetJob = await prisma.jobRole.findUnique({
+        where: { id: targetJobId },
+        select: { id: true },
+      });
+      if (!targetJob) {
+        return apiError(400, "INVALID_PAYLOAD", [
+          { path: ["targetJobId"], message: "Target job does not exist" },
+        ]);
+      }
+    }
+
     if (name && name !== session.user.name) {
       await prisma.user.update({
         where: { id: session.user.id },
-        data: { name }
+        data: { name },
       });
     }
 
-    // Update Profile
     const profile = await prisma.userProfile.upsert({
       where: { userId: session.user.id },
       update: {
-        university,
-        graduationYear: graduationYear ? parseInt(graduationYear, 10) : null,
-        bio,
-        linkedinUrl,
-        githubUrl,
-        phone,
-        targetJobId
+        university: university ?? null,
+        graduationYear: graduationYear ?? null,
+        bio: bio ?? null,
+        linkedinUrl: linkedinUrl ?? null,
+        githubUrl: githubUrl ?? null,
+        phone: phone ?? null,
+        targetJobId: targetJobId ?? null,
       },
       create: {
         userId: session.user.id,
-        university,
-        graduationYear: graduationYear ? parseInt(graduationYear, 10) : null,
-        bio,
-        linkedinUrl,
-        githubUrl,
-        phone,
-        targetJobId
-      }
+        university: university ?? null,
+        graduationYear: graduationYear ?? null,
+        bio: bio ?? null,
+        linkedinUrl: linkedinUrl ?? null,
+        githubUrl: githubUrl ?? null,
+        phone: phone ?? null,
+        targetJobId: targetJobId ?? null,
+      },
     });
 
-    // If targetJobRole changes, we might need to recalculate or reset skill gap. 
-    // The PRD mentions "akan reset skill gap". We can delete the current skill gap.
     const currentGap = await prisma.skillGap.findFirst({
       where: { userId: session.user.id },
-      orderBy: { createdAt: "desc" }
+      orderBy: { createdAt: "desc" },
     });
 
     if (currentGap && targetJobId && currentGap.jobRoleId !== targetJobId) {
-       await prisma.skillGap.delete({ where: { id: currentGap.id } });
-       // The next time they use CV Analyzer it will generate a new gap for the new role.
+      await prisma.skillGap.delete({ where: { id: currentGap.id } });
     }
 
     return NextResponse.json({ success: true, profile });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("Profile Update Error", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return handleApiError(error);
   }
 }

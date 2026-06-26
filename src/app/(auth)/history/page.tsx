@@ -11,38 +11,43 @@ export default async function HistoryPage() {
 
   const userId = session.user.id;
 
-  // Fetch CV history
   const cvHistory = await prisma.cvScoreHistory.findMany({
     where: { userId },
     orderBy: { recordedAt: "asc" },
   });
 
-  const formattedChartData = cvHistory.map((entry: { recordedAt: Date; score: number }) => ({
-    date: new Date(entry.recordedAt).toLocaleDateString("id-ID"),
-    score: entry.score,
-    timestamp: entry.recordedAt.getTime(),
-  }));
+  const formattedChartData = cvHistory.map(
+    (entry: { recordedAt: Date; score: number }) => ({
+      date: new Date(entry.recordedAt).toLocaleDateString("id-ID"),
+      score: entry.score,
+      timestamp: entry.recordedAt.getTime(),
+    }),
+  );
 
-  // Fetch generated docs
   const generatedDocs = await prisma.generatedDoc.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
   });
 
-  // Fetch cv records
   const cvRecords = await prisma.cvRecord.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
   });
 
-  type GenDocType = typeof generatedDocs[0];
-  type CvRecType = typeof cvRecords[0];
+  type GenDocType = (typeof generatedDocs)[0];
+  type CvRecType = (typeof cvRecords)[0];
 
   return (
-    <HistoryClientPage 
-      chartData={formattedChartData} 
-      docs={generatedDocs.map((d: GenDocType) => ({ ...d, createdAt: d.createdAt.toISOString() }))} 
-      cvRecords={cvRecords.map((r: CvRecType) => ({ ...r, createdAt: r.createdAt.toISOString() }))} 
+    <HistoryClientPage
+      chartData={formattedChartData}
+      docs={generatedDocs.map((d: GenDocType) => ({
+        ...d,
+        createdAt: d.createdAt.toISOString(),
+      }))}
+      cvRecords={cvRecords.map((r: CvRecType) => ({
+        ...r,
+        createdAt: r.createdAt.toISOString(),
+      }))}
     />
   );
 }

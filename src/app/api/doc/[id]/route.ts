@@ -7,14 +7,10 @@ export const dynamic = "force-dynamic";
 
 export async function PUT(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    // Vercel Best Practice: async-parallel - resolve independent promises concurrently
-    const [headerList, resolvedParams] = await Promise.all([
-      headers(),
-      params
-    ]);
+    const [headerList, resolvedParams] = await Promise.all([headers(), params]);
 
     const session = await auth.api.getSession({
       headers: headerList,
@@ -35,20 +31,19 @@ export async function PUT(
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Doc Update API Error:", message);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    // Vercel Best Practice: async-parallel - resolve independent promises concurrently
-    const [headerList, resolvedParams] = await Promise.all([
-      headers(),
-      params
-    ]);
+    const [headerList, resolvedParams] = await Promise.all([headers(), params]);
 
     const session = await auth.api.getSession({
       headers: headerList,
@@ -70,6 +65,9 @@ export async function GET(
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Doc GET API Error:", message);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

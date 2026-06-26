@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 
-// Routes that require authentication
 const AUTH_REQUIRED_PREFIXES = [
   "/dashboard",
   "/cv-analyzer",
@@ -18,16 +17,15 @@ const AUTH_REQUIRED_PREFIXES = [
   "/profile",
 ];
 
-// Routes that require ADMIN role
 const ADMIN_PREFIXES = ["/admin"];
 
-// Public routes (no auth needed)
 const PUBLIC_PATHS = [
   "/login",
   "/register",
   "/forgot-password",
   "/onboarding",
   "/market",
+  "/blog",
   "/",
   "/api/auth",
   "/design-preview",
@@ -40,31 +38,29 @@ function isPublicPath(pathname: string): boolean {
     (p) =>
       pathname === p ||
       pathname.startsWith(p + "/") ||
-      pathname.startsWith("/_next")
+      pathname.startsWith("/_next"),
   );
 }
 
 function requiresAuth(pathname: string): boolean {
   return AUTH_REQUIRED_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(p + "/")
+    (p) => pathname === p || pathname.startsWith(p + "/"),
   );
 }
 
 function requiresAdmin(pathname: string): boolean {
   return ADMIN_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(p + "/")
+    (p) => pathname === p || pathname.startsWith(p + "/"),
   );
 }
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip public paths and static assets
   if (isPublicPath(pathname)) {
     return NextResponse.next();
   }
 
-  // Check session cookie (fast check, no DB call)
   const sessionCookie = getSessionCookie(request);
 
   const needsAuth = requiresAuth(pathname);

@@ -1,3 +1,6 @@
+# Design Preview Reference
+
+``tsx
 "use client";
 
 import React, { useState } from "react";
@@ -674,3 +677,5 @@ export default function DesignSystemPage() {
     </div>
   );
 }
+
+``

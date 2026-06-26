@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { callAI, parseAIJSON } from "@/lib/ai";
 import { assertAiQuota, consumeCredit } from "@/lib/billing";
 import { handleApiError } from "@/lib/errors";
+import { z } from "zod";
 
 export async function POST(req: Request) {
   try {
@@ -20,11 +21,13 @@ export async function POST(req: Request) {
       "MOCK_INTERVIEW",
     );
 
-    const { question, answer } = await req.json();
-
-    if (!question || !answer || answer.length < 10) {
-      return NextResponse.json({ error: "Silakan masukkan jawaban yang lebih panjang." }, { status: 400 });
-    }
+    const bodySchema = z.object({
+      question: z.string().min(10).max(500),
+      answer: z.string().min(10).max(2000),
+    });
+    const body = bodySchema.safeParse(await req.json().catch(() => null));
+    if (!body.success) return NextResponse.json({ error: "Silakan masukkan jawaban yang lebih panjang." }, { status: 400 });
+    const { question, answer } = body.data;
 
     const systemPrompt = `You are an expert HR Interviewer evaluating a candidate's answer to a behavioral question.
 Analyze their response using the STAR method (Situation, Task, Action, Result) if applicable, or general communication clarity.

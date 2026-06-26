@@ -113,6 +113,7 @@ model User {
   readinessBadges  ReadinessBadge[]
   subscriptions     Subscription[]
   aiUsageLogs       AiUsageLog[]
+  articles          Article[]
 
   @@map("users")
 }
@@ -148,6 +149,7 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
+  @@unique([providerId, accountId])
   @@map("accounts")
 }
 
@@ -240,6 +242,7 @@ model CvRecord {
   scoreHistory CvScoreHistory[]
   skillGaps    SkillGap[]
 
+  @@index([userId, isLatest])
   @@map("cv_records")
 }
 
@@ -252,6 +255,8 @@ model CvScoreHistory {
   score      Int
   recordedAt DateTime @default(now())
 
+  @@index([userId])
+  @@index([cvRecordId])
   @@map("cv_score_history")
 }
 
@@ -267,6 +272,8 @@ model SkillGap {
   readinessPct  Float    @default(0)
   createdAt     DateTime @default(now())
 
+  @@index([userId, jobRoleId])
+  @@index([cvRecordId])
   @@map("skill_gaps")
 }
 
@@ -299,6 +306,7 @@ model LearningResource {
   // Relations
   roadmapProgress RoadmapProgress[]
 
+  @@index([skillId])
   @@map("learning_resources")
 }
 
@@ -325,6 +333,8 @@ model GeneratedDoc {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([userId, docType])
+  @@index([userId, createdAt])
   @@map("generated_docs")
 }
 
@@ -340,6 +350,7 @@ model SavedJob {
   notes       String?
   savedAt     DateTime  @default(now())
 
+  @@index([userId, savedAt])
   @@map("saved_jobs")
 }
 
@@ -352,6 +363,8 @@ model ReadinessBadge {
   badgeType BadgeType
   earnedAt  DateTime  @default(now())
 
+  @@unique([userId, jobRoleId, badgeType])
+  @@index([userId])
   @@map("readiness_badges")
 }
 
@@ -402,4 +415,23 @@ model QuizQuestion {
 
   @@unique([skillId, questionText])
   @@map("quiz_questions")
+}
+
+model Article {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  coverImage  String?
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published, publishedAt])
+  @@index([authorId])
+  @@map("articles")
 }

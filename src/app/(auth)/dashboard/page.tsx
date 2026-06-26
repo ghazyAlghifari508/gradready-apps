@@ -288,12 +288,7 @@ export default async function DashboardPage() {
 
         {/* AI Credits */}
         <div style={{ flex: 1, minWidth: 300 }}>
-          <CreditUsageCard
-            plan={creditUsage.plan}
-            used={creditUsage.used}
-            limit={creditUsage.limit}
-            periodEnd={creditUsage.periodEnd}
-          />
+          <CreditUsageCard {...(creditUsage as Parameters<typeof CreditUsageCard>[0])} />
         </div>
 
         {/* Latest Documents Generate */}

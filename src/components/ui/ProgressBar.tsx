@@ -9,14 +9,6 @@ interface ProgressBarProps {
   className?: string;
 }
 
-/**
- * ProgressBar Component — PRD Section 11.1.9
- * Track: 12px height, #E5E5E5 bg, border-radius 6px
- * Fill: green (default), blue (in-progress), orange (low)
- * Transition: width 0.6s ease
- * Label: 12px bold, 32px wide, right-aligned
- */
-
 const fillColors: Record<ProgressVariant, string> = {
   default: "var(--green)",
   "in-progress": "var(--blue)",

@@ -9,13 +9,6 @@ interface ToggleProps {
   className?: string;
 }
 
-/**
- * Toggle Component — PRD Section 11.1.8
- * Track: 48×28px, border-radius 14px
- * Unchecked: bg #E5E5E5, Checked: bg green
- * Thumb: 22×22px, white circle, shadow
- * Transition: 0.2s
- */
 export default function Toggle({
   checked: controlledChecked,
   onChange,

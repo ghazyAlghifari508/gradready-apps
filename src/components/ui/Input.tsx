@@ -5,17 +5,10 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
 }
 
-interface TextAreaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: string;
   label?: string;
 }
-
-/**
- * Input Component — PRD Section 11.1.7
- * Height: 48px, border: 2px solid #E5E5E5, border-radius: 12px
- * Focus: border-color blue, Error: border-color red
- */
 
 const inputBaseStyles: React.CSSProperties = {
   height: 48,
@@ -66,8 +59,7 @@ export function Input({
           ...style,
         }}
         onFocus={(e) => {
-          if (!error)
-            e.currentTarget.style.borderColor = "var(--blue)";
+          if (!error) e.currentTarget.style.borderColor = "var(--blue)";
         }}
         onBlur={(e) => {
           e.currentTarget.style.borderColor = error
@@ -104,8 +96,7 @@ export function TextArea({
           ...style,
         }}
         onFocus={(e) => {
-          if (!error)
-            e.currentTarget.style.borderColor = "var(--blue)";
+          if (!error) e.currentTarget.style.borderColor = "var(--blue)";
         }}
         onBlur={(e) => {
           e.currentTarget.style.borderColor = error

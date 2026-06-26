@@ -1,6 +1,3 @@
-// app/api/cv/latest/route.ts — GET /api/cv/latest
-// Returns the user's most recent CV record + score history
-
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";

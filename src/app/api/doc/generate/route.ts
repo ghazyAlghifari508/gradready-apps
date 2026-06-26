@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { DocType, Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { callAI, parseAndValidateAIJSON } from "@/lib/ai";
-import { assertAiQuota, consumeCredit } from "@/lib/billing";
+import { assertProFeature, consumeCredit } from "@/lib/billing";
 import { z } from "zod";
 import { apiError, handleApiError } from "@/lib/errors";
 import {
@@ -47,10 +47,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const activeSubscription = await assertAiQuota(
-      session.user.id,
-      "DOC_GENERATE",
-    );
+    const activeSubscription = await assertProFeature(session.user.id);
 
     const validation = docGenerateSchema.safeParse(
       await req.json().catch(() => undefined),

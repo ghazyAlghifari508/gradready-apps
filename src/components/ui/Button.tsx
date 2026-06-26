@@ -11,12 +11,6 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }
 
-/**
- * Button Component — PRD Section 11.1.4
- * Duolingo-inspired 3D button with shadow effect.
- * Variants: primary (green), secondary, danger, ghost, dark
- * Sizes: normal (48px), small (36px)
- */
 export default function Button({
   variant = "primary",
   size = "normal",

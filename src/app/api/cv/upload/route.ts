@@ -14,40 +14,14 @@ import { z } from "zod";
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const CV_TEXT_ANALYSIS_CHAR_CAP = 4000;
 const UPLOAD_RATE_LIMIT = 10;
-const UPLOAD_RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
-const MAX_RATE_LIMIT_USERS = 1000;
+const UPLOAD_RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
 
-type UploadRateLimitEntry = {
-  timestamps: number[];
-};
-
-const uploadRateLimit = new Map<string, UploadRateLimitEntry>();
-
-function isUploadRateLimited(userId: string) {
-  const now = Date.now();
-  const cutoff = now - UPLOAD_RATE_LIMIT_WINDOW_MS;
-  const entry = uploadRateLimit.get(userId);
-  const timestamps = entry?.timestamps.filter((time) => time > cutoff) ?? [];
-
-  if (timestamps.length >= UPLOAD_RATE_LIMIT) {
-    uploadRateLimit.delete(userId);
-    uploadRateLimit.set(userId, { timestamps });
-    return true;
-  }
-
-  timestamps.push(now);
-  uploadRateLimit.delete(userId);
-  uploadRateLimit.set(userId, { timestamps });
-
-  while (uploadRateLimit.size > MAX_RATE_LIMIT_USERS) {
-    const oldestUserId = uploadRateLimit.keys().next().value;
-    if (!oldestUserId) {
-      break;
-    }
-    uploadRateLimit.delete(oldestUserId);
-  }
-
-  return false;
+async function isUploadRateLimited(userId: string): Promise<boolean> {
+  const cutoff = new Date(Date.now() - UPLOAD_RATE_LIMIT_WINDOW);
+  const count = await prisma.cvRecord.count({
+    where: { userId, createdAt: { gte: cutoff } },
+  });
+  return count >= UPLOAD_RATE_LIMIT;
 }
 
 const cvSectionsSchema = z
@@ -113,7 +87,7 @@ export async function POST(request: NextRequest) {
       "CV_ANALYZE",
     );
 
-    if (isUploadRateLimited(session.user.id)) {
+    if (await isUploadRateLimited(session.user.id)) {
       return NextResponse.json(
         { error: "Terlalu banyak upload. Silakan coba lagi nanti." },
         { status: 429 },

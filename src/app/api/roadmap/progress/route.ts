@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { apiError, handleApiError } from "@/lib/errors";
+import { roadmapProgressSchema } from "@/lib/validation/schemas";
 
 export async function POST(req: Request) {
   try {
@@ -14,10 +16,30 @@ export async function POST(req: Request) {
     }
 
     const userId = session.user.id;
-    const { resourceId, isCompleted } = await req.json();
+    const validation = roadmapProgressSchema.safeParse(
+      await req.json().catch(() => undefined),
+    );
 
-    if (!resourceId || typeof isCompleted !== "boolean") {
-      return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+    if (!validation.success) {
+      return apiError(400, "INVALID_PAYLOAD", validation.error.issues);
+    }
+
+    const { resourceId, isCompleted } = validation.data;
+
+    const allowedResource = await prisma.learningResource.findFirst({
+      where: {
+        id: resourceId,
+        skill: {
+          userProgress: {
+            some: { userId: session.user.id },
+          },
+        },
+      },
+      select: { id: true },
+    });
+
+    if (!allowedResource) {
+      return apiError(403, "FORBIDDEN", "Forbidden");
     }
 
     const progress = await prisma.roadmapProgress.upsert({
@@ -41,11 +63,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, progress });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("Roadmap Progress Update Error:", message);
-    return NextResponse.json(
-      { error: "Internal Server Error", details: message },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }

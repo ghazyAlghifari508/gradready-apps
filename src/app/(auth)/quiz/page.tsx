@@ -24,20 +24,23 @@ export default function QuizListPage() {
   const router = useRouter();
 
   useEffect(() => {
+    const controller = new AbortController();
     async function fetchSkills() {
       try {
-        const res = await fetch("/api/quiz");
+        const res = await fetch("/api/quiz", { signal: controller.signal });
         const data = await res.json();
         if (res.ok) {
           setSkills(data.skills);
         }
-      } catch {
+      } catch (e) {
+        if (e instanceof Error && e.name === "AbortError") return;
         console.error("Failed to load skills for quiz");
       } finally {
         setLoading(false);
       }
     }
     fetchSkills();
+    return () => controller.abort();
   }, []);
 
   const getStatusColor = (status: string) => {

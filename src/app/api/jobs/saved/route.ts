@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { JobStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { apiError, handleApiError } from "@/lib/errors";
+import { savedJobSchema } from "@/lib/validation/schemas";
 
 export const dynamic = "force-dynamic";
 
@@ -23,9 +25,7 @@ export async function GET(_req: Request) {
 
     return NextResponse.json({ success: true, savedJobs });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("GET Saved Jobs API Error:", message);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
@@ -39,24 +39,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { id, companyName, position, status, notes } = body;
-
-    // IF ID exists, it's an update
-    if (id) {
-       const updated = await prisma.savedJob.update({
-         where: { id, userId: session.user.id }, // ENSURE security
-         data: {
-           status: status,
-           notes: notes
-         }
-       });
-       return NextResponse.json({ success: true, savedJob: updated });
+    const validation = savedJobSchema.safeParse(
+      await req.json().catch(() => undefined),
+    );
+    if (!validation.success) {
+      return apiError(400, "INVALID_PAYLOAD", validation.error.issues);
     }
 
-    // ELSE, create new saved job
+    const { id, companyName, position, status, notes } = validation.data;
+
+    if (id) {
+      const updated = await prisma.savedJob.update({
+        where: { id, userId: session.user.id }, // ENSURE security
+        data: {
+          status: status,
+          notes: notes,
+        },
+      });
+      return NextResponse.json({ success: true, savedJob: updated });
+    }
+
     if (!companyName || !position) {
-       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return apiError(400, "INVALID_PAYLOAD", [
+        { path: ["companyName", "position"], message: "Missing required fields" },
+      ]);
     }
 
     const newJob = await prisma.savedJob.create({
@@ -64,23 +70,20 @@ export async function POST(req: Request) {
         userId: session.user.id,
         companyName,
         position,
-        notes: notes || "",
+        notes: notes ?? "",
         status: JobStatus.SAVED,
-      }
+      },
     });
 
     return NextResponse.json({ success: true, savedJob: newJob });
-
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("POST Saved Jobs API Error:", message);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return handleApiError(error);
   }
 }
 
 export async function DELETE(req: Request) {
   try {
-     const session = await auth.api.getSession({
+    const session = await auth.api.getSession({
       headers: await headers(),
     });
 
@@ -94,13 +97,11 @@ export async function DELETE(req: Request) {
     if (!id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
 
     await prisma.savedJob.delete({
-       where: { id, userId: session.user.id }
+      where: { id, userId: session.user.id },
     });
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("DELETE Saved Jobs API Error:", message);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return handleApiError(error);
   }
 }

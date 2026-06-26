@@ -7,6 +7,7 @@ import {
   getApiErrorMessage,
   useQuotaExceededHandler,
 } from "@/lib/auth-client";
+import { useToast } from "@/components/ui/Toast";
 
 const QUESTIONS = [
   "Ceritakan tentang dirimu dan mengapa kamu tertarik dengan karir ini?",
@@ -23,6 +24,7 @@ type EvaluationResult = {
 };
 
 export default function MockInterviewPage() {
+  const { showToast } = useToast();
   const [selectedQuestion, setSelectedQuestion] = useState(QUESTIONS[0]);
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,7 +33,7 @@ export default function MockInterviewPage() {
 
   const handleEvaluate = async () => {
     if (answer.trim().length < 20) {
-      alert("Jawabanmu terlalu pendek. Cobalah elaborasi lebih detail.");
+      showToast("Jawabanmu terlalu pendek. Cobalah elaborasi lebih detail.", "warning");
       return;
     }
 
@@ -52,7 +54,7 @@ export default function MockInterviewPage() {
 
       setEvaluation(data.evaluation);
     } catch (err: unknown) {
-      alert("Gagal mengevaluasi: " + (err instanceof Error ? err.message : "Unknown error"));
+      showToast("Gagal mengevaluasi: " + (err instanceof Error ? err.message : "Unknown error"), "error");
     } finally {
       setLoading(false);
     }

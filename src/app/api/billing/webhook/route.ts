@@ -26,6 +26,7 @@ export async function POST(req: Request) {
 
     const status = mapNotificationToStatus(notification);
     const rawNotificationJson = JSON.parse(JSON.stringify(notification));
+
     const subscription = await prisma.subscription.findUnique({
       where: { midtransOrderId: notification.order_id },
     });
@@ -34,49 +35,74 @@ export async function POST(req: Request) {
       return apiError(404, "SUBSCRIPTION_NOT_FOUND", "Subscription not found");
     }
 
-    await prisma.$transaction(async (tx) => {
-      if (status === "ACTIVE") {
-        const now = new Date();
-        const periodEnd = addPeriodDays(now);
+    // Fast-path idempotency check (same transaction_id + same status already stored)
+    if (
+      notification.transaction_id &&
+      subscription.midtransTransactionId === notification.transaction_id &&
+      subscription.status === status
+    ) {
+      return NextResponse.json({ ok: true });
+    }
 
-        await tx.subscription.updateMany({
-          where: {
-            userId: subscription.userId,
-            status: { in: ["ACTIVE", "CANCELED"] },
-            id: { not: subscription.id },
-          },
-          data: { status: "EXPIRED" },
+    await prisma.$transaction(
+      async (tx) => {
+        // Re-check inside transaction to guard concurrent retries
+        const fresh = await tx.subscription.findUnique({
+          where: { id: subscription.id },
+          select: { midtransTransactionId: true, status: true },
         });
+        if (
+          notification.transaction_id &&
+          fresh?.midtransTransactionId === notification.transaction_id &&
+          fresh?.status === status
+        ) {
+          return;
+        }
+
+        if (status === "ACTIVE") {
+          const now = new Date();
+          const periodEnd = addPeriodDays(now);
+
+          await tx.subscription.updateMany({
+            where: {
+              userId: subscription.userId,
+              status: { in: ["ACTIVE", "CANCELED"] },
+              id: { not: subscription.id },
+            },
+            data: { status: "EXPIRED" },
+          });
+
+          await tx.subscription.update({
+            where: { id: subscription.id },
+            data: {
+              status,
+              periodStart: now,
+              periodEnd,
+              paymentType: notification.payment_type,
+              midtransTransactionId: notification.transaction_id,
+              rawNotificationJson,
+            },
+          });
+
+          await tx.user.update({
+            where: { id: subscription.userId },
+            data: { plan: subscription.plan },
+          });
+          return;
+        }
 
         await tx.subscription.update({
           where: { id: subscription.id },
           data: {
             status,
-            periodStart: now,
-            periodEnd,
             paymentType: notification.payment_type,
             midtransTransactionId: notification.transaction_id,
             rawNotificationJson,
           },
         });
-
-        await tx.user.update({
-          where: { id: subscription.userId },
-          data: { plan: subscription.plan },
-        });
-        return;
-      }
-
-      await tx.subscription.update({
-        where: { id: subscription.id },
-        data: {
-          status,
-          paymentType: notification.payment_type,
-          midtransTransactionId: notification.transaction_id,
-          rawNotificationJson,
-        },
-      });
-    });
+      },
+      { isolationLevel: "Serializable" },
+    );
 
     return NextResponse.json({ ok: true });
   } catch (error: unknown) {

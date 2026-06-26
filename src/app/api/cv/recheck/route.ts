@@ -1,6 +1,3 @@
-// app/api/cv/recheck/route.ts — POST /api/cv/recheck
-// Upload new CV, compare scores with previous version
-
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -14,7 +11,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get last 2 CV versions for comparison
     const cvRecords = await prisma.cvRecord.findMany({
       where: { userId: session.user.id },
       orderBy: { versionNumber: "desc" },

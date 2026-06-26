@@ -5,11 +5,6 @@ interface StreakCounterProps {
   className?: string;
 }
 
-/**
- * StreakCounter Component — PRD Section 11.1.11
- * Inline-flex, orange 10% bg, pill shape
- * Fire symbol 18px + number 16px weight 800 orange
- */
 import { Flame } from "lucide-react";
 
 export default function StreakCounter({

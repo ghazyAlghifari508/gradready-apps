@@ -1,0 +1,19 @@
+beberapa update fitur gradready
+
+-menambahkan fitur billing/pricing : terdapat halaman pricing pada halaman public. dan nantinya akan ada 2 tier subscription berupa card pricing component gitu, tier pertama itu free/gratis jadi user itu dibatasi 3x  perbulan untuk generate dan revisi cv dan user gratis hanya bisa generate dan revisi cv saja, untuk fitur generate motivation letter, resume dll itu diblock lalu untuk tier kedua yaitu pro, user bisa unlimited generate dan revisi cv serta bisa generate resume, ml dll (pembayaran pake midtrans)
+
+-tambahkan halaman blog/artikel pada halaman public yang isinya adalah berita/artikel gitu yang dilakukan oleh admin gradready, artikel harus ada halaman detail artikel dan juga pada halaman artikel tersebut harus ada paginationnya 
+
+-perbagus desain landing page
+
+-pergantian warna pallet gradready
+
+-mengganti api ai yang awalnya menggunakan openrouter menjadi menggunakan nvidia nim api
+
+-terdapat fitur revisi cv, ml dll jika cv, ml dll tidak sesuai keinginan user! limit generate dan limit revisi dibedakan/tidak disamakan. limit generate cv = 3, limit revisi cv = 5
+
+-terdapat fitur generate cv non ats dan ats, yang nantinya untuk form pengisian data di bagian cv ats dan non ats itu dibedain
+
+-untuk login dan register bisa gunakan akun google biar cepat
+
+-logo gradready

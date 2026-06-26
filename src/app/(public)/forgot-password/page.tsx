@@ -30,7 +30,6 @@ export default function ForgotPasswordPage() {
 
   const onSubmit = async () => {
     setIsLoading(true);
-    // Simulate a short delay (email is not actually sent in dev)
     await new Promise((r) => setTimeout(r, 1200));
     setIsLoading(false);
     setSubmitted(true);
@@ -67,17 +66,25 @@ export default function ForgotPasswordPage() {
         {!submitted ? (
           <>
             <div style={{ marginBottom: 28, textAlign: "center" }}>
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
-                <div style={{ 
-                  width: 64, 
-                  height: 64, 
-                  borderRadius: 20, 
-                  backgroundColor: "rgba(34,197,94,0.1)", 
-                  display: "flex", 
-                  alignItems: "center", 
+              <div
+                style={{
+                  display: "flex",
                   justifyContent: "center",
-                  color: "var(--green)"
-                }}>
+                  marginBottom: 12,
+                }}
+              >
+                <div
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 20,
+                    backgroundColor: "rgba(34,197,94,0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "var(--green)",
+                  }}
+                >
                   <Lock size={32} />
                 </div>
               </div>
@@ -136,17 +143,25 @@ export default function ForgotPasswordPage() {
               borderRadius: 16,
             }}
           >
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-              <div style={{ 
-                width: 80, 
-                height: 80, 
-                borderRadius: "50%", 
-                backgroundColor: "rgba(34,197,94,0.1)", 
-                display: "flex", 
-                alignItems: "center", 
+            <div
+              style={{
+                display: "flex",
                 justifyContent: "center",
-                color: "var(--green)"
-              }}>
+                marginBottom: 16,
+              }}
+            >
+              <div
+                style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: "50%",
+                  backgroundColor: "rgba(34,197,94,0.1)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "var(--green)",
+                }}
+              >
                 <Mail size={40} />
               </div>
             </div>
@@ -203,7 +218,8 @@ export default function ForgotPasswordPage() {
               fontWeight: 600,
             }}
           >
-            <ArrowLeft size={14} className="inline-block mr-1" /> Kembali ke halaman masuk
+            <ArrowLeft size={14} className="inline-block mr-1" /> Kembali ke
+            halaman masuk
           </Link>
         </div>
       </div>

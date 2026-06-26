@@ -106,7 +106,9 @@ export default function Card({
                 textTransform: "uppercase",
                 letterSpacing: "1px",
                 color:
-                  variant === "light" ? "var(--green)" : "rgba(255,255,255,0.7)",
+                  variant === "light"
+                    ? "var(--green)"
+                    : "rgba(255,255,255,0.7)",
                 marginBottom: 6,
                 display: "inline-block",
               }}
@@ -192,7 +194,6 @@ export default function Card({
     );
   }
 
-  // Simple card with children
   return (
     <div
       className={`gr-card gr-card--${variant} ${className} ${interactive ? "cursor-pointer" : ""}`}

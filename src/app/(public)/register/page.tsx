@@ -1,12 +1,13 @@
-"use client";
+﻿"use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signUp, getSession } from "@/lib/auth-client";
+import { isAdmin } from "@/lib/roles";
 import Button from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
@@ -30,8 +31,10 @@ type RegisterForm = z.infer<typeof registerSchema>;
 
 import { AlertTriangle, ArrowLeft } from "lucide-react";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/onboarding";
   const [serverError, setServerError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -65,20 +68,17 @@ export default function RegisterPage() {
         name: data.name,
         email: data.email,
         password: data.password,
-        callbackURL: "/onboarding",
+        callbackURL: callbackUrl,
       });
 
       if (result.error) {
-        setServerError(
-          result.error.message ?? "Gagal mendaftar. Coba lagi."
-        );
+        setServerError(result.error.message ?? "Gagal mendaftar. Coba lagi.");
       } else {
-        // Check user role to determine redirect target
         const session = await getSession();
-        if (session?.data?.user?.role === "admin") {
+        if (isAdmin(session?.data)) {
           router.push("/admin");
         } else {
-          router.push("/onboarding");
+          router.push(callbackUrl);
         }
       }
     } catch {
@@ -96,7 +96,7 @@ export default function RegisterPage() {
         fontFamily: "'Nunito', sans-serif",
       }}
     >
-      {/* ─── Left Panel ─── */}
+      {/* â”€â”€â”€ Left Panel â”€â”€â”€ */}
       <div
         style={{
           flex: "0 0 420px",
@@ -149,7 +149,11 @@ export default function RegisterPage() {
         >
           {[
             { step: "01", title: "Daftar akun", desc: "Gratis selamanya" },
-            { step: "02", title: "Pilih target job", desc: "5 kategori tersedia" },
+            {
+              step: "02",
+              title: "Pilih target job",
+              desc: "5 kategori tersedia",
+            },
             { step: "03", title: "Upload CV", desc: "Analisis AI instant" },
           ].map((item) => (
             <div
@@ -178,9 +182,7 @@ export default function RegisterPage() {
                 >
                   {item.title}
                 </div>
-                <div
-                  style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}
-                >
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
                   {item.desc}
                 </div>
               </div>
@@ -189,7 +191,7 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* ─── Right Panel: Form ─── */}
+      {/* â”€â”€â”€ Right Panel: Form â”€â”€â”€ */}
       <div
         style={{
           flex: 1,
@@ -243,7 +245,8 @@ export default function RegisterPage() {
                 fontWeight: 600,
               }}
             >
-              <AlertTriangle size={16} className="inline-block mr-2" /> {serverError}
+              <AlertTriangle size={16} className="inline-block mr-2" />{" "}
+              {serverError}
             </div>
           )}
 
@@ -286,9 +289,7 @@ export default function RegisterPage() {
                     gap: 8,
                   }}
                 >
-                  <div
-                    style={{ display: "flex", gap: 4, flex: 1 }}
-                  >
+                  <div style={{ display: "flex", gap: 4, flex: 1 }}>
                     {[0, 1, 2].map((i) => (
                       <div
                         key={i}
@@ -367,7 +368,8 @@ export default function RegisterPage() {
                 fontWeight: 600,
               }}
             >
-              <ArrowLeft size={14} className="inline-block mr-1" /> Kembali ke beranda
+              <ArrowLeft size={14} className="inline-block mr-1" /> Kembali ke
+              beranda
             </Link>
           </div>
         </div>
@@ -381,3 +383,14 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div style={{color: "var(--gray-light)"}}>Memuat...</div>}>
+      <RegisterForm />
+    </Suspense>
+  );
+}
+
+
+

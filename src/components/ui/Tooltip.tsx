@@ -8,11 +8,6 @@ interface TooltipProps {
   className?: string;
 }
 
-/**
- * Tooltip Component — PRD Section 11.1.10
- * Trigger: green text, 8% green bg, pill shape
- * Bubble: dark-blue bg, white text, arrow pointing down
- */
 export default function Tooltip({
   content,
   children,

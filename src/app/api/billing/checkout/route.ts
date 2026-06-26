@@ -3,14 +3,15 @@ import { headers } from "next/headers";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PLAN_LIMITS, PERIOD_DAYS } from "@/lib/plans";
+import { Prisma } from "@/generated/prisma/client";
+import { PRO_PRICING, type BillingInterval } from "@/lib/plans";
 import { createSnapTransaction } from "@/lib/midtrans";
 import { apiError, handleApiError } from "@/lib/errors";
 
 export const dynamic = "force-dynamic";
 
 const checkoutSchema = z.object({
-  plan: z.enum(["PRO", "PLUS"]),
+  interval: z.enum(["monthly", "yearly"]),
 });
 
 export async function POST(req: Request) {
@@ -27,25 +28,53 @@ export async function POST(req: Request) {
       return apiError(400, "INVALID_PAYLOAD", validation.error.issues);
     }
 
-    const { plan } = validation.data;
-    const planConfig = PLAN_LIMITS[plan];
+    const { interval } = validation.data as { interval: BillingInterval };
+    const config = PRO_PRICING[interval];
     const now = new Date();
     const periodEnd = new Date(now);
-    periodEnd.setDate(periodEnd.getDate() + PERIOD_DAYS);
+    periodEnd.setDate(periodEnd.getDate() + config.period);
     const orderId = `GR-${session.user.id.slice(0, 6)}-${Date.now()}`;
 
-    await prisma.subscription.create({
-      data: {
-        userId: session.user.id,
-        plan,
-        status: "PENDING",
-        periodStart: now,
-        periodEnd,
-        creditsLimit: planConfig.credits,
-        midtransOrderId: orderId,
-        grossAmount: planConfig.priceIDR,
+    // Atomic check-then-create: prevents two concurrent requests both passing
+    // the "no active subscription" check and creating duplicate PENDING rows.
+    const created = await prisma.$transaction(
+      async (tx) => {
+        const activeSub = await tx.subscription.findFirst({
+          where: {
+            userId: session.user.id,
+            status: { in: ["ACTIVE", "CANCELED"] },
+            periodEnd: { gt: now },
+          },
+          select: { plan: true, periodEnd: true },
+        });
+
+        if (activeSub && activeSub.plan !== "FREE") {
+          return { conflict: activeSub };
+        }
+
+        return tx.subscription.create({
+          data: {
+            userId: session.user.id,
+            plan: "PRO",
+            status: "PENDING",
+            periodStart: now,
+            periodEnd,
+            creditsLimit: 0, // ponytail: unused for PRO (unlimited)
+            midtransOrderId: orderId,
+            grossAmount: config.priceIDR,
+          },
+        });
       },
-    });
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    );
+
+    if ("conflict" in created) {
+      return apiError(
+        409,
+        "ALREADY_SUBSCRIBED",
+        `Langganan ${created.conflict.plan} masih aktif hingga ${created.conflict.periodEnd.toLocaleDateString("id-ID")}. Tunggu sampai masa aktif habis sebelum berlangganan lagi.`,
+      );
+    }
 
     const appUrl =
       process.env.NEXT_PUBLIC_APP_URL ??
@@ -55,24 +84,20 @@ export async function POST(req: Request) {
 
     const snap = await createSnapTransaction({
       orderId,
-      grossAmount: planConfig.priceIDR,
+      grossAmount: config.priceIDR,
       customer: {
         firstName: session.user.name ?? "GradReady User",
         email: session.user.email,
       },
       itemDetails: [
         {
-          id: `gradready-${plan.toLowerCase()}`,
-          price: planConfig.priceIDR,
+          id: `gradready-pro-${interval}`,
+          price: config.priceIDR,
           quantity: 1,
-          name: `GradReady ${planConfig.label} Plan`,
+          name: `GradReady Pro ${config.label}`,
         },
       ],
-      callbacks: {
-        finish: finishUrl,
-        pending: finishUrl,
-        error: finishUrl,
-      },
+      callbacks: { finish: finishUrl, pending: finishUrl, error: finishUrl },
     });
 
     return NextResponse.json({ ...snap, orderId });

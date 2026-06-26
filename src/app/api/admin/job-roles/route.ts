@@ -1,14 +1,23 @@
-import { auth } from "@/lib/auth";
+import { auth, isAdmin } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
-// GET: List all job roles
+const jobRoleSchema = z.object({
+  name: z.string().min(1).max(100),
+  category: z.string().min(1).max(100),
+  description: z.string().optional().default(""),
+  avgSalaryMin: z.coerce.number().positive().optional(),
+  avgSalaryMax: z.coerce.number().positive().optional(),
+  demandLevel: z.enum(["HIGH", "MEDIUM", "LOW"]).optional().default("MEDIUM"),
+});
+
 export async function GET() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || session.user.role !== "admin") {
+  if (!isAdmin(session)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
@@ -22,20 +31,22 @@ export async function GET() {
   return NextResponse.json({ jobRoles });
 }
 
-// POST: Create new job role
 export async function POST(req: Request) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || session.user.role !== "admin") {
+  if (!isAdmin(session)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
-  const { name, category, description, avgSalaryMin, avgSalaryMax, demandLevel } =
-    await req.json();
+  const parsed = jobRoleSchema.safeParse(await req.json().catch(() => null));
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid payload", issues: parsed.error.issues }, { status: 400 });
+  }
+  const { name, category, description, avgSalaryMin, avgSalaryMax, demandLevel } = parsed.data;
 
   if (!name || !category) {
     return NextResponse.json(
       { error: "name and category are required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

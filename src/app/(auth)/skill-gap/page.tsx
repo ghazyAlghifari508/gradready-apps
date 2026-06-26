@@ -32,15 +32,18 @@ export default function SkillGapPage() {
   const handleQuotaExceeded = useQuotaExceededHandler();
 
   useEffect(() => {
-    fetchGap();
+    const controller = new AbortController();
+    fetchGap(controller.signal);
+    return () => controller.abort();
   }, []);
 
-  const fetchGap = async () => {
+  const fetchGap = async (signal?: AbortSignal) => {
     try {
-      const _res = await fetch("/api/roadmap/progress");
+      const _res = await fetch("/api/roadmap/progress", { signal });
 
       const analysisRes = await fetch("/api/skillgap/analyze", {
         method: "POST",
+        signal,
       });
       const data = await analysisRes.json();
       if (!analysisRes.ok) {

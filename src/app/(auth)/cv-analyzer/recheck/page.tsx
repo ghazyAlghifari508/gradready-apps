@@ -99,11 +99,13 @@ export default function RecheckPage() {
   const handleQuotaExceeded = useQuotaExceededHandler();
 
   useEffect(() => {
-    fetch("/api/cv/latest")
+    const controller = new AbortController();
+    fetch("/api/cv/latest", { signal: controller.signal })
       .then(r => r.json())
       .then(d => { if (d.cv) setPreviousCV(d.cv); })
-      .catch(() => {})
+      .catch((e) => { if (e?.name !== "AbortError") console.error(e); })
       .finally(() => setLoading(false));
+    return () => controller.abort();
   }, []);
 
   const handleFile = useCallback(async (file: File) => {

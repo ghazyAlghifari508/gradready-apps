@@ -7,6 +7,7 @@ import { z } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn, getSession } from "@/lib/auth-client";
+import { isAdmin } from "@/lib/roles";
 import Button from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
@@ -17,14 +18,14 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-import { 
-  AlertTriangle, 
-  ArrowLeft, 
-  Cpu, 
-  BarChart2, 
-  Map, 
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Cpu,
+  BarChart2,
+  Map,
   FileText,
-  Star 
+  Star,
 } from "lucide-react";
 
 function LoginForm() {
@@ -54,12 +55,11 @@ function LoginForm() {
 
       if (result.error) {
         setServerError(
-          result.error.message ?? "Email atau password salah. Coba lagi."
+          result.error.message ?? "Email atau password salah. Coba lagi.",
         );
       } else {
-        // Check user role to determine redirect target
         const session = await getSession();
-        if (session?.data?.user?.role === "admin") {
+        if (isAdmin(session?.data)) {
           router.push("/admin");
         } else {
           router.push(callbackUrl);
@@ -116,7 +116,8 @@ function LoginForm() {
             fontWeight: 600,
           }}
         >
-          <AlertTriangle size={16} className="inline-block mr-2" /> {serverError}
+          <AlertTriangle size={16} className="inline-block mr-2" />{" "}
+          {serverError}
         </div>
       )}
 
@@ -208,7 +209,8 @@ function LoginForm() {
             fontWeight: 600,
           }}
         >
-          <ArrowLeft size={14} className="inline-block mr-1" /> Kembali ke beranda
+          <ArrowLeft size={14} className="inline-block mr-1" /> Kembali ke
+          beranda
         </Link>
       </div>
     </div>
@@ -272,7 +274,15 @@ export default function LoginPage() {
           {[
             { value: "5K+", label: "Pengguna" },
             { value: "95%", label: "Lulus Screening" },
-            { value: <div className="flex items-center justify-center gap-1">4.9<Star size={20} fill="var(--green)" stroke="none" /></div>, label: "Rating" },
+            {
+              value: (
+                <div className="flex items-center justify-center gap-1">
+                  4.9
+                  <Star size={20} fill="var(--green)" stroke="none" />
+                </div>
+              ),
+              label: "Rating",
+            },
           ].map((stat) => (
             <div key={stat.label} style={{ textAlign: "center" }}>
               <div
@@ -346,7 +356,9 @@ export default function LoginPage() {
           backgroundColor: "var(--bg-white)",
         }}
       >
-        <Suspense fallback={<div style={{ color: "var(--gray-light)" }}>Memuat...</div>}>
+        <Suspense
+          fallback={<div style={{ color: "var(--gray-light)" }}>Memuat...</div>}
+        >
           <LoginForm />
         </Suspense>
       </div>

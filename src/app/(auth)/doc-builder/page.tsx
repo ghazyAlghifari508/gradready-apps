@@ -8,7 +8,8 @@ export default function DocBuilderHubPage() {
   const [counts, setCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    fetch("/api/doc/history")
+    const controller = new AbortController();
+    fetch("/api/doc/history", { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => {
         if (data.docs) {
@@ -18,7 +19,9 @@ export default function DocBuilderHubPage() {
           });
           setCounts(newCounts);
         }
-      });
+      })
+      .catch((e) => { if (e?.name !== "AbortError") console.error(e); });
+    return () => controller.abort();
   }, []);
 
   const features = [

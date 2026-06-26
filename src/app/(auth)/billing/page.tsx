@@ -6,18 +6,11 @@ import { prisma } from "@/lib/prisma";
 import { getRemainingCredits } from "@/lib/billing";
 import CreditUsageCard from "@/components/billing/CreditUsageCard";
 import { Badge, Card } from "@/components/ui";
+import { formatIDR } from "@/lib/format";
 
 export const metadata = {
   title: "Billing - GradReady",
 };
-
-function formatIDR(value: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("id-ID", {
@@ -90,12 +83,7 @@ export default async function BillingPage() {
       </div>
 
       <div style={{ maxWidth: 420, marginBottom: 28 }}>
-        <CreditUsageCard
-          plan={usage.plan}
-          used={usage.used}
-          limit={usage.limit}
-          periodEnd={usage.periodEnd}
-        />
+        <CreditUsageCard {...usage} />
       </div>
 
       <Card>

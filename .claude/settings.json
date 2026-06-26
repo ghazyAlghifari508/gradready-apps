@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx next *)",
+      "Bash(python -c \"import graphify\")",
+      "Bash(pip install *)",
+      "Bash(python -c \"import sys; open\\('.graphify_python', 'w'\\).write\\(sys.executable\\)\")",
+      "Bash(npx eslint *)",
+      "Bash(set /p dummy=\"\")",
+      "Bash(powershell -Command \"Get-Date -Format 'yyyyMMddHHmmss'\")",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
+    ]
+  }
+}
