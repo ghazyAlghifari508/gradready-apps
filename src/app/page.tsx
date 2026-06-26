@@ -150,7 +150,8 @@ export default function LandingPage() {
 
 
       {/* Features */}
-      <section id="features" className="max-w-7xl mx-auto px-6 py-20 relative bg-[rgba(255,200,0,0.04)] rounded-[48px] my-10">
+      <div className="bg-[rgba(255,200,0,0.04)] my-10 py-20">
+        <section id="features" className="max-w-7xl mx-auto px-6 relative">
         <h2 className="font-['Fredoka_One'] text-4xl md:text-5xl mb-4 max-w-md text-gray-800">
           Fitur <span className="text-[#58CC02] italic">unggulan</span> kami
         </h2>
@@ -221,11 +222,13 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      </div>
 
       {/* How It Works */}
+      <div className="bg-[rgba(28,176,246,0.04)] my-10 py-24">
       <section
         id="how-it-works"
-        className="max-w-7xl mx-auto px-6 py-24 flex flex-col md:flex-row items-center gap-16 overflow-hidden bg-[rgba(28,176,246,0.04)] rounded-[48px] my-10"
+        className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-16 overflow-hidden"
       >
         <div className="flex-1">
           <h2 className="font-['Fredoka_One'] text-4xl md:text-5xl leading-tight mb-6 text-gray-800">
@@ -258,9 +261,11 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      </div>
 
       {/* Statistics */}
-      <section className="max-w-7xl mx-auto px-6 py-10 bg-[rgba(255,200,0,0.07)] rounded-[48px] my-10">
+      <div className="bg-[rgba(255,200,0,0.07)] my-10 py-10">
+      <section className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white border-2 border-gray-200 border-b-[8px] rounded-[32px] p-8 text-center hover:-translate-y-1 transition-transform">
             <h3 className="font-['Fredoka_One'] text-5xl text-[#1CB0F6] mb-2">
@@ -288,6 +293,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      </div>
 
       {/* Target Section 2, 3, 4 Wrapper for Stacking Effect */}
       <div className="relative w-full">
@@ -468,9 +474,10 @@ export default function LandingPage() {
       </div>
 
       {/* About */}
+      <div className="bg-[rgba(88,204,2,0.04)] my-10 py-24">
       <section
         id="about"
-        className="max-w-7xl mx-auto px-6 py-24 flex flex-col md:flex-row items-center gap-16 bg-[rgba(88,204,2,0.04)] rounded-[48px] my-10"
+        className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-16"
       >
         <div className="flex-1">
           <h2 className="font-['Fredoka_One'] text-4xl md:text-5xl mb-6 text-gray-800">
@@ -506,8 +513,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      </div>
 
-      {/* NEW Section 4: Testimonials */}
+      {/* Testimonials */}
       <section className="max-w-7xl mx-4 xl:mx-auto px-6 py-24 bg-gray-50 rounded-[48px] border-2 border-gray-200 my-10">
         <h2 className="font-['Fredoka_One'] text-4xl md:text-5xl text-center mb-16 text-gray-800">
           Telah terbukti <span className="text-[#1CB0F6] italic">berhasil</span>
@@ -567,7 +575,8 @@ export default function LandingPage() {
       </section>
 
       {/* Blog */}
-      <section className="max-w-7xl mx-auto px-6 py-12 bg-[rgba(229,229,229,0.2)] rounded-[48px] my-10">
+      <div className="bg-[rgba(229,229,229,0.2)] my-10 py-12">
+      <section className="max-w-7xl mx-auto px-6">
         <h2 className="font-['Fredoka_One'] text-4xl md:text-5xl mb-12 text-gray-800">
           Artikel <span className="text-[#58CC02] italic">Karir</span> Terkini
         </h2>
@@ -622,8 +631,9 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
+      </div>
 
-      {/* FAQ Section */}
+      {/* FAQ */}
       <section
         id="faq"
         className="max-w-7xl mx-auto px-6 py-24 border-t-2 border-gray-100"
@@ -665,7 +675,8 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="max-w-4xl mx-auto text-center px-6 py-24 my-10 bg-[rgba(88,204,2,0.06)] rounded-[48px]">
+      <div className="bg-[rgba(88,204,2,0.06)] my-10 py-24">
+      <section className="max-w-4xl mx-auto text-center px-6">
         <h2 className="font-['Fredoka_One'] text-5xl md:text-6xl text-gray-800 mb-8 leading-tight">
           Siap wujudkan karir <br className="hidden md:block" />
           <span className="text-[#58CC02]">impianmu?</span>
@@ -681,6 +692,7 @@ export default function LandingPage() {
           Buat Akun Gratis Sekarang! <Rocket size={24} className="fill-white" />
         </Button>
       </section>
+      </div>
 
       {/* NEW Footer */}
       <footer className="w-full bg-[var(--dark-blue)] py-16 px-6 border-t-4 border-[#1a2235]">
