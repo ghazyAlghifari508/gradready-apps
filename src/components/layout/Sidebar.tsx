@@ -11,6 +11,7 @@ import {
   Home,
   FileText,
   PenTool,
+  Sparkles,
   BarChart2,
   Map,
   Bot,
@@ -40,6 +41,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: Home, group: "main" },
   { href: "/cv-analyzer", label: "CV Analyzer", icon: FileText, group: "cv" },
+  { href: "/generate-cv", label: "Generate CV", icon: Sparkles, group: "cv" },
   { href: "/cv-builder", label: "CV Builder", icon: PenTool, group: "cv" },
   { href: "/skill-gap", label: "Skill Gap", icon: BarChart2, group: "cv" },
   { href: "/roadmap", label: "Roadmap Belajar", icon: Map, group: "cv" },

@@ -5,6 +5,7 @@ const AUTH_REQUIRED_PREFIXES = [
   "/dashboard",
   "/cv-analyzer",
   "/cv-builder",
+  "/generate-cv",
   "/skill-gap",
   "/roadmap",
   "/doc-builder",
