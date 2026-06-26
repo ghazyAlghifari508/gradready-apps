@@ -46,58 +46,50 @@ export default function LandingPage() {
       `}</style>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 no-underline">
-            <span className="font-['Fredoka_One'] font-bold text-2xl text-[#58CC02] tracking-wide">
-              gradready
-            </span>
+      <header className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 no-underline">
+          <span className="font-['Fredoka_One'] font-bold text-2xl text-[#58CC02] tracking-wide">
+            gradready
+          </span>
+        </Link>
+        <nav className="hidden md:flex items-center gap-8">
+          <Link
+            href="#features"
+            className="font-bold text-gray-400 hover:text-gray-700 transition-colors"
+          >
+            Fitur
           </Link>
-          <nav className="hidden md:flex items-center gap-8">
-            <Link
-              href="#features"
-              className="font-bold text-gray-400 hover:text-gray-700 transition-colors"
-            >
-              Fitur
-            </Link>
-            <Link
-              href="#how-it-works"
-              className="font-bold text-gray-400 hover:text-gray-700 transition-colors"
-            >
-              Cara Kerja
-            </Link>
-            <Link
-              href="#pricing"
-              className="font-bold text-gray-400 hover:text-gray-700 transition-colors"
-            >
-              Harga
-            </Link>
-            <Link
-              href="#about"
-              className="font-bold text-gray-400 hover:text-gray-700 transition-colors"
-            >
-              Tentang
-            </Link>
-            <Link
-              href="#faq"
-              className="font-bold text-gray-400 hover:text-gray-700 transition-colors"
-            >
-              FAQ
-            </Link>
-          </nav>
-          <div className="flex items-center gap-6">
-            <Link
-              href="/login"
-              className="font-bold text-gray-700 hidden md:block hover:text-[#58CC02] transition-colors"
-            >
-              Login
-            </Link>
-            <Link href="/register" className="no-underline">
-              <Button variant="primary" className="!rounded-2xl">
-                Daftar
-              </Button>
-            </Link>
-          </div>
+          <Link
+            href="#how-it-works"
+            className="font-bold text-gray-400 hover:text-gray-700 transition-colors"
+          >
+            Cara Kerja
+          </Link>
+          <Link
+            href="#about"
+            className="font-bold text-gray-400 hover:text-gray-700 transition-colors"
+          >
+            Tentang
+          </Link>
+          <Link
+            href="#faq"
+            className="font-bold text-gray-400 hover:text-gray-700 transition-colors"
+          >
+            FAQ
+          </Link>
+        </nav>
+        <div className="flex items-center gap-6">
+          <Link
+            href="/login"
+            className="font-bold text-gray-700 hidden md:block hover:text-[#58CC02] transition-colors"
+          >
+            Login
+          </Link>
+          <Link href="/register" className="no-underline">
+            <Button variant="primary" className="!rounded-2xl">
+              Daftar
+            </Button>
+          </Link>
         </div>
       </header>
 
@@ -157,8 +149,8 @@ export default function LandingPage() {
       </section>
 
 
-      {/* Interactive Features */}
-      <section id="features" className="max-w-7xl mx-auto px-6 py-20 relative">
+      {/* Features */}
+      <section id="features" className="max-w-7xl mx-auto px-6 py-20 relative bg-[rgba(255,200,0,0.04)] rounded-[48px] my-10">
         <h2 className="font-['Fredoka_One'] text-4xl md:text-5xl mb-4 max-w-md text-gray-800">
           Fitur <span className="text-[#58CC02] italic">unggulan</span> kami
         </h2>
@@ -230,10 +222,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Enjoyable material section */}
+      {/* How It Works */}
       <section
         id="how-it-works"
-        className="max-w-7xl mx-auto px-6 py-24 flex flex-col md:flex-row items-center gap-16 overflow-hidden"
+        className="max-w-7xl mx-auto px-6 py-24 flex flex-col md:flex-row items-center gap-16 overflow-hidden bg-[rgba(28,176,246,0.04)] rounded-[48px] my-10"
       >
         <div className="flex-1">
           <h2 className="font-['Fredoka_One'] text-4xl md:text-5xl leading-tight mb-6 text-gray-800">
@@ -267,8 +259,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* NEW Section 1: Statistics */}
-      <section className="max-w-7xl mx-auto px-6 py-10">
+      {/* Statistics */}
+      <section className="max-w-7xl mx-auto px-6 py-10 bg-[rgba(255,200,0,0.07)] rounded-[48px] my-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white border-2 border-gray-200 border-b-[8px] rounded-[32px] p-8 text-center hover:-translate-y-1 transition-transform">
             <h3 className="font-['Fredoka_One'] text-5xl text-[#1CB0F6] mb-2">
@@ -295,74 +287,6 @@ export default function LandingPage() {
             </p>
           </div>
         </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="max-w-7xl mx-auto px-6 py-24">
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="font-['Fredoka_One'] text-4xl md:text-5xl text-gray-800 mb-4">
-            Pilih Paket <span className="text-[#58CC02]">GradReady</span>
-          </h2>
-          <p className="text-gray-500 font-bold text-lg max-w-xl mx-auto">
-            Mulai gratis. Upgrade kapanpun untuk akses semua fitur AI karir tanpa batas.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Free Plan */}
-          <div className="bg-white border-2 border-gray-200 border-b-[8px] rounded-[32px] p-8 flex flex-col">
-            <h3 className="font-['Fredoka_One'] text-2xl text-gray-800 mb-2">Free</h3>
-            <div className="font-['Fredoka_One'] text-5xl text-gray-800 mb-1">Rp 0</div>
-            <p className="text-gray-400 font-bold text-sm mb-6">/bulan</p>
-            <ul className="flex flex-col gap-3 mb-8 flex-1">
-              {[
-                "3x generate CV/bulan",
-                "5x revisi CV/bulan",
-                "CV Analyzer (upload & skor)",
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-gray-600 font-bold text-sm">
-                  <span className="text-[#58CC02] text-lg">✓</span> {f}
-                </li>
-              ))}
-              <li className="flex items-center gap-2 text-gray-400 font-bold text-sm">
-                <span className="text-gray-300 text-lg">✗</span> AI Doc Builder (diblok)
-              </li>
-            </ul>
-            <button disabled className="w-full py-3 rounded-2xl border-b-4 border-gray-200 bg-gray-100 text-gray-400 font-bold cursor-not-allowed">
-              Plan Aktif
-            </button>
-          </div>
-
-          {/* Pro Plan */}
-          <div className="bg-white border-2 border-[#FFC800] border-b-[8px] rounded-[32px] p-8 flex flex-col shadow-[0_4px_24px_rgba(255,200,0,0.15)]">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-['Fredoka_One'] text-2xl text-gray-800">Pro</h3>
-              <span className="bg-[#FFC800] text-gray-800 font-bold text-xs px-3 py-1 rounded-full">Populer</span>
-            </div>
-            <div className="font-['Fredoka_One'] text-5xl text-gray-800 mb-1">Rp 49.000</div>
-            <p className="text-gray-400 font-bold text-sm mb-1">/bulan</p>
-            <p className="text-[#58CC02] font-bold text-xs mb-6">atau Rp 490.000/tahun (hemat 2 bulan!)</p>
-            <ul className="flex flex-col gap-3 mb-8 flex-1">
-              {[
-                "Unlimited generate & revisi CV",
-                "Semua fitur AI Doc Builder",
-                "Motivation Letter, Cover Letter, LinkedIn & lebih",
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-gray-600 font-bold text-sm">
-                  <span className="text-[#58CC02] text-lg">✓</span> {f}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/login?callbackUrl=/pricing"
-              className="w-full block text-center py-3 rounded-2xl border-b-4 border-[#4BB200] bg-[#58CC02] text-white font-bold hover:bg-[#4BB200] active:border-b-0 active:translate-y-1 transition-all"
-            >
-              Upgrade ke Pro ↗
-            </Link>
-          </div>
-        </div>
-        <p className="text-center text-gray-400 font-bold text-sm mt-8">
-          Sudah Pro? <Link href="/login?callbackUrl=/pricing" className="text-[#1CB0F6] underline">Login</Link> untuk mengelola langganan
-        </p>
       </section>
 
       {/* Target Section 2, 3, 4 Wrapper for Stacking Effect */}
@@ -543,10 +467,10 @@ export default function LandingPage() {
         </section>
       </div>
 
-      {/* About Section */}
+      {/* About */}
       <section
         id="about"
-        className="max-w-7xl mx-auto px-6 py-24 flex flex-col md:flex-row items-center gap-16"
+        className="max-w-7xl mx-auto px-6 py-24 flex flex-col md:flex-row items-center gap-16 bg-[rgba(88,204,2,0.04)] rounded-[48px] my-10"
       >
         <div className="flex-1">
           <h2 className="font-['Fredoka_One'] text-4xl md:text-5xl mb-6 text-gray-800">
@@ -642,19 +566,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Blog Section */}
-      <section className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex items-end justify-between mb-12 gap-4 flex-wrap">
-          <h2 className="font-['Fredoka_One'] text-4xl md:text-5xl text-gray-800">
-            Artikel <span className="text-[#58CC02] italic">Karir</span> Terkini
-          </h2>
-          <Link
-            href="/login?callbackUrl=/blog"
-            className="font-bold text-[#58CC02] hover:text-[#4BB200] bg-[#f2ffe0] px-5 py-2 rounded-xl transition-colors"
-          >
-            Lihat Semua →
-          </Link>
-        </div>
+      {/* Blog */}
+      <section className="max-w-7xl mx-auto px-6 py-12 bg-[rgba(229,229,229,0.2)] rounded-[48px] my-10">
+        <h2 className="font-['Fredoka_One'] text-4xl md:text-5xl mb-12 text-gray-800">
+          Artikel <span className="text-[#58CC02] italic">Karir</span> Terkini
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
@@ -693,7 +609,7 @@ export default function LandingPage() {
                   {b.desc}
                 </p>
                 <Link
-                  href="/login?callbackUrl=/blog"
+                  href="#"
                   className="inline-flex items-center gap-2 font-bold text-[#58CC02] hover:text-[#4BB200] bg-[#f2ffe0] px-4 py-2 rounded-xl transition-colors"
                 >
                   Baca Selengkapnya
@@ -748,8 +664,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* NEW Section 5: CTA */}
-      <section className="max-w-4xl mx-auto text-center px-6 py-24 my-10">
+      {/* CTA */}
+      <section className="max-w-4xl mx-auto text-center px-6 py-24 my-10 bg-[rgba(88,204,2,0.06)] rounded-[48px]">
         <h2 className="font-['Fredoka_One'] text-5xl md:text-6xl text-gray-800 mb-8 leading-tight">
           Siap wujudkan karir <br className="hidden md:block" />
           <span className="text-[#58CC02]">impianmu?</span>
