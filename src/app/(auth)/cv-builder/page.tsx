@@ -32,30 +32,10 @@ export default function CVBuilderPage() {
   const [mode, setMode] = useState<CVMode>("ats");
   const isCreative = mode === "creative";
   const { showToast } = useToast();
-  const [downloadUnlocked, setDownloadUnlocked] = useState(false);
-  const [checkingQuota, setCheckingQuota] = useState(false);
   const [revising, setRevising] = useState(false);
   const [reviseInstruction, setReviseInstruction] = useState("");
   const [showRevise, setShowRevise] = useState(false);
   const [generating, setGenerating] = useState(false);
-
-  // ponytail: gate the client-side PDFDownloadLink with a quota check on click
-  const handleDownloadClick = async () => {
-    if (downloadUnlocked || checkingQuota) return;
-    setCheckingQuota(true);
-    try {
-      const res = await fetch("/api/cv/generate-quota", { method: "POST" });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error?.message || "Kuota generate CV habis. Upgrade ke Pro.");
-      }
-      setDownloadUnlocked(true);
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : "Gagal generate CV.", "error");
-    } finally {
-      setCheckingQuota(false);
-    }
-  };
 
   const handleRevise = async () => {
     if (!reviseInstruction.trim() || revising) return;
@@ -148,9 +128,6 @@ export default function CVBuilderPage() {
           setReviseInstruction={setReviseInstruction}
           revising={revising}
           handleRevise={handleRevise}
-          downloadUnlocked={downloadUnlocked}
-          handleDownloadClick={handleDownloadClick}
-          checkingQuota={checkingQuota}
         />
       );
       default: return null;

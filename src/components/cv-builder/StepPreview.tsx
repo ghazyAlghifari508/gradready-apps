@@ -21,9 +21,6 @@ type Props = {
   setReviseInstruction: (v: string) => void;
   revising: boolean;
   handleRevise: () => void;
-  downloadUnlocked: boolean;
-  handleDownloadClick: () => void;
-  checkingQuota: boolean;
 };
 
 function CVPreview({ data }: { data: CVData }) {
@@ -168,7 +165,7 @@ function CVPreview({ data }: { data: CVData }) {
 export default function StepPreview({
   cvData, mode, isCreative, generating, handleGenerate,
   showRevise, setShowRevise, reviseInstruction, setReviseInstruction,
-  revising, handleRevise, downloadUnlocked, handleDownloadClick, checkingQuota,
+  revising, handleRevise,
 }: Props) {
   return (
     <div className="space-y-4">
@@ -226,19 +223,13 @@ export default function StepPreview({
       </div>
 
       <div className="flex flex-col items-center mt-4 border-t pt-4 gap-3">
-        {downloadUnlocked ? (
-          <CVDownloadButton
-            data={cvData}
-            mode={mode}
-            fileName={`${cvData.personalInfo.fullName.replace(/\s+/g, "_") || "CV"}_${isCreative ? "Kreatif" : "ATS"}.pdf`}
-          />
-        ) : (
-          <Button variant="primary" onClick={handleDownloadClick} disabled={checkingQuota}>
-            {checkingQuota ? "Memeriksa kuota..." : "⬇ Generate & Download CV (PDF)"}
-          </Button>
-        )}
+        <CVDownloadButton
+          data={cvData}
+          mode={mode}
+          fileName={`${cvData.personalInfo.fullName.replace(/\s+/g, "_") || "CV"}_${isCreative ? "Kreatif" : "ATS"}.pdf`}
+        />
         <p className="text-xs text-[#AFAFAF] font-semibold">
-          {downloadUnlocked ? "Klik tombol di atas untuk mengunduh PDF." : "Generate CV memakai 1 dari kuota bulanan-mu."}
+          Klik tombol di atas untuk mengunduh PDF.
         </p>
       </div>
     </div>
