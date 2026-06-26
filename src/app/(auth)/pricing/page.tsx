@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { PLAN_LIMITS, PRO_PRICING } from "@/lib/plans";
 import { Badge, Card } from "@/components/ui";
-import PricingCheckoutButton from "./PricingCheckoutButton";
+import PricingProCard from "./PricingProCard";
 import { getActiveSubscription } from "@/lib/billing";
 import { formatIDR } from "@/lib/format";
 
@@ -111,53 +111,7 @@ export default async function PricingPage() {
           </div>
         </Card>
 
-        <Card style={{ borderColor: isPro ? "var(--green)" : "#FFC800", boxShadow: "0 4px 24px rgba(255,200,0,0.15)" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 20, height: "100%" }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                <h2 style={{ fontSize: 22, fontWeight: 900, color: "var(--dark-blue)", margin: 0 }}>Pro</h2>
-                <Badge variant={isPro ? "completed" : "premium"}>{isPro ? "Aktif" : "Populer"}</Badge>
-              </div>
-              <div style={{ fontFamily: "'Fredoka One', cursive", fontSize: 36, color: "var(--dark-blue)" }}>
-                {formatIDR(PRO_PRICING.monthly.priceIDR)}
-                <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 14, fontWeight: 800, color: "var(--gray-light)" }}>/bulan</span>
-              </div>
-              <p style={{ fontSize: 13, color: "var(--gray-light)", fontWeight: 700, marginTop: 4 }}>
-                atau {formatIDR(PRO_PRICING.yearly.priceIDR)}/tahun{" "}
-                <span style={{ color: "var(--green)", fontWeight: 900 }}>(hemat 2 bulan!)</span>
-              </p>
-            </div>
-            <ul style={{ display: "flex", flexDirection: "column", gap: 10, padding: 0, margin: 0, listStyle: "none", flex: 1 }}>
-              {PLAN_LIMITS.PRO.features.map((f) => (
-                <li key={f} style={{ fontSize: 14, fontWeight: 700, color: "var(--gray-text)" }}>✓ {f}</li>
-              ))}
-            </ul>
-
-            {isPro ? (
-              <button
-                disabled
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  borderRadius: 12,
-                  border: "none",
-                  backgroundColor: "var(--gray-light)",
-                  color: "#fff",
-                  fontWeight: 900,
-                  cursor: "not-allowed",
-                  opacity: 0.6,
-                }}
-              >
-                Plan Aktif
-              </button>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <PricingCheckoutButton interval="monthly" label="Mulai Bulanan" />
-                <PricingCheckoutButton interval="yearly" label="Mulai Tahunan (Hemat!)" />
-              </div>
-            )}
-          </div>
-        </Card>
+        <PricingProCard isPro={isPro} />
       </div>
 
       <p style={{ textAlign: "center", fontSize: 13, color: "var(--gray-light)", fontWeight: 700 }}>
