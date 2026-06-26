@@ -13,10 +13,10 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://app.sandbox.midtrans.com https://app.midtrans.com",
-      "style-src 'self' 'unsafe-inline'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://app.sandbox.midtrans.com https://app.midtrans.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https:",
-      "font-src 'self' data:",
+      "font-src 'self' data: https://fonts.gstatic.com",
       "connect-src 'self' https:",
       "frame-src https://app.sandbox.midtrans.com https://app.midtrans.com",
       "object-src 'none'",
@@ -27,9 +27,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // Required for PDF extraction in API routes (server-side)
   serverExternalPackages: ["unpdf"],
-  // Next.js 16 uses Turbopack by default
   turbopack: {
     resolveAlias: {
       canvas: { browser: "./src/lib/empty.ts" },
